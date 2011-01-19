@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+<title>rally</title>
+</head>
+<body>
+    <!-- import rally -->
+    <script src="../src/res/lang.js"></script>
+    <script src="../src/res/publisher.js"></script>
+    <script src="../src/res/timer.js"></script>
+    <script src="../src/rally.js"></script>
+    <script src="../src/keycontroller.js"></script>
+    <script src="../src/stage.js"></script>
+    <script src="../src/actor.js"></script>
+    <script src="../src/map.js"></script>
+    <script src="../src/vehicle.js"></script>
+
+    <!-- kaze assets -->
+    <script src="res/log.js"></script>
+    <script src="res/kaze.js"></script>
+
+    <!-- tests -->
+    <!--script src="perf.canvas.js"></script-->
+    <script src="test.actor.js"></script>
+    <script src="test.rally.js"></script>
+
+    <script>
+
+    (function () {
+
+      function param (name) {
+        var vals = new RegExp(name + '=([^&]+)').exec(location.search);
+        return (vals) ? decodeURIComponent(vals[1]) : null;
+      }
+
+      function getFilter () {
+        var value = param("filter");
+        return value ? new RegExp(value) : null;
+      }
+
+      function getLoops () {
+        var value = param("loops");
+        return value ? parseInt(value, 10) : null;
+      }
+
+      var pass = [],
+          fail = [],
+          filter = getFilter(),
+          loops = getLoops();
+
+      kaze.run(function (n, p, e, l, r) {
+        // always display elapsed and average when multiple loops executed
+        if (l > 1) {
+          (p ? log : log.warn)(n, e + "ms", e / l + "avg");
+        }
+
+        (p ? pass : fail).push(n);
+
+        // display a summary when no tests remain
+        if (!r) {
+          log(pass.length, "passed.", fail.length, "failed.");
+          if (fail.length)
+            for (var i = 0; i < fail.length; i++)
+              log.warn("Failed:", fail[i])
+        }
+
+      }, filter, loops);
+
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+.rally-stage {
+    position:relative;
+}
+
+.rally-stage canvas {
+    position:absolute;
+    top:0;
+    left:0;
+}
