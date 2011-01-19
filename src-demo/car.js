@@ -11,16 +11,19 @@
             img = new Image();
     
         img.onload = function () {
-            self.setImage(this);
 
             // Front wheel drive
-            self.registration = [-this.width / 2, -this.height * .35];
-
+            var yOffset = 0.35;
             // Or, rear wheel drive
-            //self.registration = [-this.width / 2, -this.height * .75];
+            //var yOffset = 0.75;
+
+            self.setImage(this);
+            self.regX = -this.width / 2;
+            self.regY = -this.height * yOffset;
 
             // Center the car on the stage
-            self.position = [w / 2, h / 2];
+            self.x = w / 2;
+            self.y = h / 2;
             self.update();
         };
 

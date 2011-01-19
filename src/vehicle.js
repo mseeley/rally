@@ -75,7 +75,8 @@
             }
 
             this.rotation = rotation;
-            this.position = [0, y];
+            this.x = 0;
+            this.y += y;
             this.update();
         }
     });

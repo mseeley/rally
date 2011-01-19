@@ -9,60 +9,65 @@
 
         this.canvas = canvas;
         this.context = canvas.getContext("2d");
-        this.registration = [0, 0];
-        this.position = [0, 0];
-        this.rotation = 0;
-
-        this._rotation = 0;
     }
 
     Actor.prototype = {
-        registration: null,
-        position: null,
-        rotation: null,
-        _rotation: null,
+        
         canvas: null,
         context: null,
         hitPoints: null,
         img: null,
+ 
+        // Dimension properties
+
+        height: 0,
+        width: 0,
+        x: 0,
+        y: 0,
+        regX: 0,
+        regY: 0,
+        rotation: 0,
+        
+        // Abstract methods
+
+        onframe: function (e) {},
+        onresize: function (e) {},
+
+        // Generic methods
+
         hitTest: function (points) {
             
         },
         update: function () {
-
-// TODO: MUST avoid update if rotation, position, or registration have not
-// changed. Imagine the background Map actor updating itself uselessly...
-
-// TODO: Store total rotation
-
             var ctx = this.context,
                 pos = this.position,
                 img = this.img,
-                reg = this.registration;
-
-            if (!img) {
-                // setImage() must be called before update() :(
-                return;
+                r = this.rotation,
+                x = this.x,
+                y = this.y;
+            
+            // Return early if no translation properties have changed
+            // setImage() must be called before update()
+ 
+            if (!img || (x && y && r)) {
+               return;
             }
 
-            this._rotation += this.rotation;
-
+            //this.rotation =
+            //    this.x =
+            //    this.y = 0;
+            
             //ctx.clearRect(-img.width / 2, -img.height / 2, img.width * 2, img.height * 2);
             ctx.clearRect(-1000, -1000, 2000, 2000);
-            ctx.translate(pos[0], pos[1]);
-            ctx.rotate(this.rotation * Math.PI / 180);
-            ctx.drawImage(img, reg[0], reg[1]);
+            ctx.translate(x, y);
+            ctx.rotate(r * Math.PI / 180);
+            ctx.drawImage(img, this.regX, this.regY);
             debug.axes(ctx);
-        },
+       },
         setImage: function (img) {
             this.img = img;
 // TODO: parse image data to find opaque pixels
-        },
-        
-        // Implementations left up to subclass
-
-        onframe: function (e) {},
-        onresize: function (e) {}
+        }
     };
 
     rally.Actor = Actor;
