@@ -3,7 +3,13 @@
     const UP = "up",
           DOWN = "down",
           LEFT = "left",
-          RIGHT = "right";
+          RIGHT = "right",
+
+          // Commonly used values or references
+
+          RADIANS = Math.PI / 180,
+          SIN = Math.sin,
+          COS = Math.cos;
 
     function Vehicle (w, h) {
         rally.Actor.apply(this, arguments);
@@ -12,26 +18,34 @@
 
     // Allow motion valus to be altered by host environment
 
-    lang.mix(Vehicle, {
+    lang.mix({
         ACCELERATION: 1,
         DECELERATION: 1,
         BRAKING: 1,
-        HANDLING: 1,
-        BOUNCE: 0
-    });
+        HANDLING: 5,
+        MAX_FORWARD_VELOCITY: 1,
+        MAX_REVERSE_VELOCITY: .5
+    }, Vehicle);
 
     Vehicle.prototype = lang.merge(rally.Actor.prototype, {
-        // xVelocity
-        // yVelocity
-        // velocity
-        // maxForwardVelocity
-        // maxReverseVelocity
 
-        // acceleration
-        // deceleration
-        // bounce - negative effect on x and y velocity
-        // handling
-        // braking
+        // All vehicles move using the motion value constants. Sub-classes or
+        // instances can modify these values for unique motion behavior.
+
+        accel: 1,
+        decel: 1,
+        handling: 1,
+        braking: 1,
+        mfv: 1,
+        mrv: 1,
+
+        // Frame values for velocity
+        
+        vx: 0,
+        vy: 0,
+
+        // Object holding keycodes by direction name.
+        
         keys: null,
 
         setKeys: function (desc) {
@@ -47,61 +61,50 @@
             }
         },
         onframe: function (e) {
-            var eventKeys = e.keys,
+            var rotationStep = Vehicle.HANDLING * this.handling,
+                accel = 5,
+                r = 0,
+                vx = 0,
+                vy = 0,
+                eventKeys = e.keys,
                 keys = this.keys;
+ 
+            // Early return if no keys are pressed.
 
             if (!eventKeys.length) {
                 return;
             }
 
-            var translateStep = 8,
-                rotationStep = 8;
-
-            var rotation = 0,
-                x = 0,
-                y = 0;
-
-            if (eventKeys.indexOf(keys[UP]) > -1) {
-                y -= translateStep;
-            } else if (eventKeys.indexOf(keys[DOWN]) > -1) {
-                y += translateStep / 2;
+            if (eventKeys.indexOf(keys[LEFT]) > -1) {
+                r = -rotationStep;
+            } else if (eventKeys.indexOf(keys[RIGHT]) > -1) {
+                r = rotationStep;
             }
             
-            if (eventKeys.indexOf(keys[LEFT]) > -1) {
-                rotation -= rotationStep;
+            var asRadians = this.rotation * -RADIANS;
+            var _vx = SIN(asRadians) * accel;
+            var _vy = COS(asRadians) * accel; 
 
-            } else if (eventKeys.indexOf(keys[RIGHT]) > -1) {
-                rotation += rotationStep;
+            if (eventKeys.indexOf(keys[UP]) > -1) {
+                vx = _vx;
+                vy = _vy;
+            } else if (eventKeys.indexOf(keys[DOWN]) > -1) {
+                vx = -_vx;
+                vy = -_vy;
             }
 
-            this.rotation = rotation;
-            this.x = 0;
-            this.y += y;
-            this.update();
+            // Work avoidance if the pressed keys are not recognized.
+
+            if (r || vx || vy) {
+                this.rotation += r;
+                this.x -= vx;
+                this.y -= vy;
+                this.update();                
+            }
+
         }
     });
 
     rally.Vehicle = Vehicle;
 
 })();
-
-/*
-	p.accelerate = function() {
-		//increase push ammount for acceleration
-		this.thrust += this.thrust + 0.6;
-		if(this.thrust >= Ship.MAX_THRUST) {
-			this.thrust = Ship.MAX_THRUST;
-		}
-		
-		//accelerate
-		this.vX += Math.sin(this.rotation*(Math.PI/-180))*this.thrust;
-		this.vY += Math.cos(this.rotation*(Math.PI/-180))*this.thrust;
-		
-		//cap max speeds
-		this.vX = Math.min(Ship.MAX_VELOCITY, Math.max(-Ship.MAX_VELOCITY, this.vX));
-		this.vY = Math.min(Ship.MAX_VELOCITY, Math.max(-Ship.MAX_VELOCITY, this.vY));
-	}
-
-*/
-
-

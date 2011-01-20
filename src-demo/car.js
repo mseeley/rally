@@ -13,13 +13,13 @@
         img.onload = function () {
 
             // Front wheel drive
-            var yOffset = 0.35;
+            //var yOffset = 0.35;
             // Or, rear wheel drive
-            //var yOffset = 0.75;
+            var yOffset = 0.75;
 
             self.setImage(this);
-            self.regX = -this.width / 2;
-            self.regY = -this.height * yOffset;
+            self.regX = this.width / 2;
+            self.regY = this.height * yOffset;
 
             // Center the car on the stage
             self.x = w / 2;
@@ -31,7 +31,12 @@
     }
 
     Car.prototype = lang.merge(rally.Vehicle.prototype, {
-
+        accel: 1,
+        decel: 1,
+        handling: 2.5,
+        braking: 1,
+        mfv: 1,
+        mrv: 1
     });
 
     if (!global.vehicles) {
