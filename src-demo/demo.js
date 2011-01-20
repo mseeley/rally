@@ -1,7 +1,7 @@
 (function () {
 
-    const STAGE_WIDTH = 600,
-          STAGE_HEIGHT = 400;
+    const STAGE_WIDTH = 800,
+          STAGE_HEIGHT = 600;
 
     if (rally.hasSupport()) {
 

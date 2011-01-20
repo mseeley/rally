@@ -35,8 +35,8 @@
         decel: 1,
         handling: 2.5,
         braking: 1,
-        mfv: 1,
-        mrv: 1
+        mfs: 1,
+        mrs: 1
     });
 
     if (!global.vehicles) {

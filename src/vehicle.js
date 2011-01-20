@@ -23,8 +23,8 @@
         DECELERATION: 1,
         BRAKING: 1,
         HANDLING: 5,
-        MAX_FORWARD_VELOCITY: 1,
-        MAX_REVERSE_VELOCITY: .5
+        MAX_FORWARD_SPEED: 1,
+        MAX_REVERSE_SPEED: .5
     }, Vehicle);
 
     Vehicle.prototype = lang.merge(rally.Actor.prototype, {
@@ -36,13 +36,14 @@
         decel: 1,
         handling: 1,
         braking: 1,
-        mfv: 1,
-        mrv: 1,
+        mfs: 1,
+        mrs: 1,
 
-        // Frame values for velocity
+        // Frame values for motion properties
         
         vx: 0,
         vy: 0,
+        speed: 0,
 
         // Object holding keycodes by direction name.
         
@@ -62,47 +63,53 @@
         },
         onframe: function (e) {
             var rotationStep = Vehicle.HANDLING * this.handling,
-                accel = 5,
-                r = 0,
-                vx = 0,
-                vy = 0,
+                asRadians = this.rotation * RADIANS,
+                speed = this.speed,
                 eventKeys = e.keys,
-                keys = this.keys;
+                keys = this.keys,
+                r = 0;
  
-            // Early return if no keys are pressed.
-
-            if (!eventKeys.length) {
-                return;
-            }
-
             if (eventKeys.indexOf(keys[LEFT]) > -1) {
                 r = -rotationStep;
             } else if (eventKeys.indexOf(keys[RIGHT]) > -1) {
                 r = rotationStep;
             }
+
+            if (eventKeys.indexOf(keys[DOWN]) > -1) {
+                speed += 0.5;
+            } else if (eventKeys.indexOf(keys[UP]) > -1) {
+                speed -= 1;
+            } else {
+                speed *= 0.975;
+            }
+
+            if (speed > 5) {
+                speed = 5;
+            } else if (speed < -10) {
+                speed = -10;
+            }
+
+            // Calculate velocity, store motion property values
+
+            vx = SIN(asRadians) * speed;
+            vy = -(COS(asRadians) * speed);
             
-            var asRadians = this.rotation * -RADIANS;
-            var _vx = SIN(asRadians) * accel;
-            var _vy = COS(asRadians) * accel; 
+            this.speed = speed;
+            this.vx = vx;
+            this.vy = vy;
+ 
+            // Set Actor interface properties, update!
 
-            if (eventKeys.indexOf(keys[UP]) > -1) {
-                vx = _vx;
-                vy = _vy;
-            } else if (eventKeys.indexOf(keys[DOWN]) > -1) {
-                vx = -_vx;
-                vy = -_vy;
-            }
+            this.rotation += r;
+            this.x -= vx;
+            this.y -= vy;
+            this.update();
 
-            // Work avoidance if the pressed keys are not recognized.
-
-            if (r || vx || vy) {
-                this.rotation += r;
-                this.x -= vx;
-                this.y -= vy;
-                this.update();                
-            }
-
-        }
+            // Sample bounce off top
+            //if (this.y <= this.regY) {
+            //    this.speed *= -0.6;
+            //}
+       }
     });
 
     rally.Vehicle = Vehicle;
