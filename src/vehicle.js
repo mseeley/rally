@@ -7,10 +7,11 @@
 
           // Commonly used values or references
 
-          RADIANS = Math.PI / 180,
-          SIN = Math.sin,
-          COS = Math.cos;
-
+          M = rally.math,
+          PI_RADIANS = M.PI_RADIANS,
+          SIN = M.SIN,
+          COS = M.COS;
+    
     function Vehicle (w, h) {
         rally.Actor.apply(this, arguments);
         this.keys = {};
@@ -41,8 +42,8 @@
 
         // Frame values for motion properties
         
-        vx: 0,
-        vy: 0,
+        //vx: 0,
+        //vy: 0,
         speed: 0,
 
         // Object holding keycodes by direction name.
@@ -63,7 +64,7 @@
         },
         onframe: function (e) {
             var rotationStep = Vehicle.HANDLING * this.handling,
-                asRadians = this.rotation * RADIANS,
+                asRadians = this.rotation * PI_RADIANS,
                 speed = this.speed,
                 eventKeys = e.keys,
                 keys = this.keys,
@@ -95,8 +96,8 @@
             vy = -(COS(asRadians) * speed);
             
             this.speed = speed;
-            this.vx = vx;
-            this.vy = vy;
+            //this.vx = vx;
+            //this.vy = vy;
  
             // Set Actor interface properties, update!
 

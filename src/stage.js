@@ -8,21 +8,7 @@
         this.height = desc.height;
         this.fps = desc.fps;
         this.keys = [];
-
-        // Reinforce scope for event handler usage. Silly JavaScript.
-
-        var handlers = ["blur", "frame", "focus", "key"],
-            len = handlers.length,
-            handle;
-
-        while ((handle = handlers[--len])) {
-            this["on" + handle] = this["on" + handle].bind(this);
-        }
-
-        el.contentEditable = true;
-        el.addEventListener("focus", this.onfocus, false); 
-        el.addEventListener("blur", this.onblur, false);
-    }
+   }
     
     Stage.prototype = publisher.extend({
         element: null,
@@ -40,16 +26,7 @@
             });
         },
         onkey: function (e) {
-            this.keys = e.keyCodes.slice(0);
-        },
-
-        // Activation event handlers
-
-        onblur: function (e) {
-            this.deactivate();
-        },
-        onfocus: function (e) {
-            this.activate(); 
+            this.keys = e.keyCodes;
         },
 
         // Activation method and properties
@@ -57,38 +34,36 @@
         activate: function () {
             if (!this.isActive) {
                 var kc = rally.keycontroller,
-                    onkey = this.onkey;
+                    onkey = this.onkey,
+                    isActive = true;
 
-                kc.on("keystart", onkey);
-                kc.on("keyend", onkey);
+                kc.on("keystart", onkey, this);
+                kc.on("keyend", onkey, this);
                 
-                timer.set(this.onframe, 1000 / this.fps);
+                timer.set(this.onframe, 1000 / this.fps, this);
                 
-                this.isActive = true;
-
-                this.fire("activate");
+                this.isActive = isActive;
+                this.fire("active", {
+                    isActive: isActive
+                });
             }
         },
         deactivate: function () {
             if (this.isActive) {
                 var kc = rally.keycontroller,
-                    onkey = this.onkey;
+                    onkey = this.onkey,
+                    isActive = false;
 
-                kc.off("keystart", onkey);
-                kc.off("keyend", onkey);
+                kc.off("keystart", onkey, this);
+                kc.off("keyend", onkey, this);
 
-                timer.clear(this.onframe, 1000 / this.fps);
+                timer.clear(this.onframe, 1000 / this.fps, this);
                
-                this.isActive = false;
-
-                this.fire("deactivate");
+                this.isActive = isActive;
+                this.fire("active", {
+                    isActive: isActive
+                });
             }
-        },
-        destroy: function () {
-            var el = this.element;
-            el.removeEventListener("focus", this.onfocus, false);
-            el.removeEventListener("blur", this.onblur, false);
-            this.deactivate();
         },
 
         // Dimension

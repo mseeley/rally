@@ -31,9 +31,21 @@
 
         stage.activate();
 
-        //stage.element.focus();
-
         debug.displayFps(stage);
+
+        // Start and stop the stage
+
+        var btnOn = document.getElementById("on"),
+            btnOff = document.getElementById("off");
+        btnOff.focus();
+        btnOn.onclick = function () {
+            stage.activate();
+            btnOff.focus();
+        };
+        btnOff.onclick = function () {
+            stage.deactivate();
+            btnOn.focus();
+        };
     }
 
 })();

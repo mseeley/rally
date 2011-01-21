@@ -1,7 +1,8 @@
 (function () {
 
     const CANVAS = document.createElement("canvas"),
-          RADIANS = Math.PI / 180;
+          M = rally.math;
+          PI_RADIANS = M.PI_RADIANS;
 
     function Actor (w, h) {
         var canvas = CANVAS.cloneNode(false);
@@ -21,8 +22,8 @@
  
         // Dimension properties
 
-        height: 0,
-        width: 0,
+        //height: 0,
+        //width: 0,
         x: 0,
         y: 0,
         regX: 0,
@@ -66,7 +67,7 @@
             if (this._x !== null) {
                 ctx.save();
                 ctx.translate(this._x, this._y);
-                ctx.rotate(this._rotation * RADIANS);
+                ctx.rotate(this._rotation * PI_RADIANS);
                 ctx.clearRect(-rx * 1.5, -ry * 1.5, img.width * 1.5, img.height * 1.5);
                 ctx.restore();
             }
@@ -75,8 +76,18 @@
 
             ctx.save();
             ctx.translate(x, y);
-            ctx.rotate(r * RADIANS);
+            ctx.rotate(r * PI_RADIANS);
             ctx.drawImage(img, -rx, -ry);
+
+            //debug.origin(ctx);
+            //debug.points(ctx, [
+            //    [0, 10], [0, 11], [0, 12]
+            //]);
+
+            //debug.indices(ctx, [
+            //    32000, 35200, 38400
+            //]);
+
             ctx.restore();
 
             // Save position and rotation for clearing dirty frame region
@@ -98,24 +109,47 @@
 
 /*
 
-// All actors
-An image that displays
-Another image that is the region which other actors hit test against
-    enables a region other than the visible image to be hit test against
-    Think of an actor with antenna, the body of the actor should be tested not the antenna
+actors have surfaces and bounds
+    a surface is shown to the user
+    bounds is the sillouhette of surface regions which are checked for collision
 
-// Only on Vehicles
-A third image which contains the collion information the actor uses when testing for hits on another actor
+vehicles have hitData, an array of points which need to be compared to other
+actor's bounding shapes for collision detection.
 
-Collisions only happen in the direction of movement (only on Y)
+vehicle collisions can be detected on any axis. The colliding actor supplies
+it's velocity and mass which is applied to each other.
 
-car.hitTest(map);
 
-// Maps don't have collision information
-map.hitTest(car);
 
-collisionData
-surfaceData
-   
+load(url, callback, scope);
+
+rally.load('data', function (img) {
+    actor.setSurface(img);
+});
+
+rally.pointsByAlpha(); // find collision and bounds
+
+setSurface(data, callback, scope)
+setBounds(data, callback, scope);
+setCollision(data, callback, scope) // checked against bounds of other actors, minimum set of points
+
+
+Bounds parsing:
+
+    To a single dimensional array of 0 or 1. if pixel is opaque in 
+    bounds map then set 1, otherwise a zero.
+
+    can I update the x, y, and rotation of bounds without tranforming another canvas?
+
+    Accepts an alpha threshold to allow/prevent partially transparent pixels
+
+Collision parsing:
+
+    Array of points
+    Points converted to x,y then to global coords for hit testing
+
+var hits = [
+]
+
 */
 

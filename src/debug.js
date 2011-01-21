@@ -1,14 +1,17 @@
 (function () {
 
+    const FILL_STYLE = "red";
+
     var viewportWidth = 3000,
         viewportHeight = 3000;
 
     function Fps (stage) {
         var input = document.createElement("input");
+        input.readOnly = true;
+        input.style.width = "50px";
         
         stage.element.parentNode.appendChild(input);
-        stage.on("activate", this.onactivate, this);
-        stage.on("deactivate", this.ondeactivate, this);
+        stage.on("active", this.onactive, this);
 
         this.input = input;
         this.stage = stage;
@@ -22,11 +25,12 @@
         onframe: function (e) {
             this.frames++;
         },
-        onactivate: function (e) {
-            this.enable();
-        },
-        ondeactivate: function (e) {
-            this.disable();
+        onactive: function (e) {
+            if (e.isActive) {
+                this.enable();
+            } else {
+                this.disable();
+            }
         },
         update: function () {
             // Pure convenience as scale is 1 second.
@@ -58,8 +62,8 @@
     
     debug = {
         axes: function (ctx) {
-            // axes
             ctx.save();
+
             ctx.strokeStyle = "#ccc";
             ctx.font = "normal 10px sans-serif";
 
@@ -84,15 +88,47 @@
             ctx.closePath();        
 
             ctx.restore();
-
         },
         origin: function (ctx) {
             ctx.save();
+
             ctx.beginPath();
-            ctx.fillStyle = "red";
+            ctx.fillStyle = FILL_STYLE;
             ctx.arc(0, 0, 3, 0, Math.PI * 2);
             ctx.fill();
             ctx.closePath();
+
+            ctx.restore();
+        },
+        points: function (ctx, pts) {
+            ctx.save();
+            ctx.fillStyle = FILL_STYLE;
+
+            var i = 0,
+                len = pts.length,
+                pt;
+
+            for (i; i < len; i++) {
+                pt = pts[i];
+                ctx.fillRect(pt[0], pt[1], 1, 1);
+            }
+            
+            ctx.restore();
+        },
+        indices: function (ctx, idxs) {
+            ctx.save();
+            ctx.fillStyle = FILL_STYLE;
+
+            var i = 0,
+                len = idxs.length,
+                w = ctx.canvas.width,
+                pt;
+
+            for (i; i < len; i++) {
+                pt = rally.math.indexToPoint(idxs[i], w);
+                ctx.fillRect(pt[0], pt[1], 1, 1);
+            }
+            
             ctx.restore();
         },
         displayFps: function (stage) {
