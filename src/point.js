@@ -12,6 +12,15 @@
         this.y = y;
     }
 
+    Point.velocity = function (angle, speed) {
+        angle *= PI_RADIANS;
+
+        return {
+            x: SIN(angle) * speed,
+            y: -(COS(angle) * speed)
+        };
+    };
+
     Point.prototype = {
         x: null,
         y: null,
@@ -72,13 +81,7 @@
             };
         },
 
-        velocity: function (angle, speed) {
-            angle *= PI_RADIANS;
-
-            return {
-                x: SIN(angle) * speed,
-                y: -(COS(angle) * speed)
-            };
+        transform: function (x, y, angle, origin) {
         },
 
         toString: function () {

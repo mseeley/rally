@@ -3,7 +3,9 @@
     const UP = "up",
           DOWN = "down",
           LEFT = "left",
-          RIGHT = "right";
+          RIGHT = "right"
+
+          VELOCITY = rally.Point.velocity;
     
     function Vehicle (w, h) {
         rally.Actor.apply(this, arguments);
@@ -55,12 +57,14 @@
                 }
             }
         },
+
         onframe: function (e) {
             var rotationStep = Vehicle.HANDLING * this.handling,
-                speed = this.speed,
                 eventKeys = e.keys,
+                speed = this.speed,
+                r = this.rotation,
                 keys = this.keys,
-                r = 0;
+                v;
  
             if (eventKeys.indexOf(keys[DOWN]) > -1) {
                 speed += 0.5;
@@ -77,30 +81,19 @@
             }
 
             if (eventKeys.indexOf(keys[LEFT]) > -1) {
-                r = -rotationStep;
+                r -= rotationStep;
             } else if (eventKeys.indexOf(keys[RIGHT]) > -1) {
-                r = rotationStep;
+                r += rotationStep;
             }
 
-            // Calculate velocity, store motion property values
-// TODO: Avoid creating a new Point on every frame, eliminate instantiation time and GC
-            var pt = new rally.Point(),
-                v = pt.velocity(this.rotation + r, speed),
-                vx = v.x,
-                vy = v.y;
+            v = VELOCITY(r, speed);
+ 
+// TODO: Check if velocity causes a hit
 
             this.speed = speed;
-// TODO: vx and vy can be used to move bounds?            
-            //this.vx = vx;
-            //this.vy = vy;
- 
-            // Set Actor interface properties, update!
-
-// TODO: Check if rotation and velocity causes a hit on another actor
-
-            this.rotation += r;
-            this.x -= vx;
-            this.y -= vy;
+            this.rotation = r;
+            this.x -= v.x;
+            this.y -= v.y;
             this.update();
         }
     });

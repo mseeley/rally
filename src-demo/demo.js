@@ -10,7 +10,6 @@
                 if (++ready == stage.children.length) {
                     car.x = 30;//stage.width / 2;
                     car.y = 30;//stage.height / 2;
-                    //car.rotation = 33;
                     car.update();
 
                     stage.on("frame", car.onframe, car);
