@@ -1,19 +1,25 @@
 (function () {
 
-    const STAGE_WIDTH = 800,
-          STAGE_HEIGHT = 600;
-
     if (rally.hasSupport()) {
 
-        var stage = new rally.Stage({
-                element: document.getElementById("stage"),
-                width: STAGE_WIDTH,
-                height: STAGE_HEIGHT,
-                fps: 55
-            }),
-            //map = new rally.Map(STAGE_WIDTH, STAGE_HEIGHT),
-            car = new vehicles.Car(STAGE_WIDTH, STAGE_HEIGHT);
+        var stage = new rally.Stage(document.getElementById("stage")),
+            car = new vehicles.Car(stage.width, stage.height),
+            ready = 0,
+            onready = function (e) {
+                stage.addChild(e.source);
+                if (++ready == stage.children.length) {
+                    car.x = 30;//stage.width / 2;
+                    car.y = 30;//stage.height / 2;
+                    //car.rotation = 33;
+                    car.update();
 
+                    stage.on("frame", car.onframe, car);
+                    stage.activate();
+                }
+            };
+
+        car.on("ready", onready);
+        
         car.setKeys({
             down: 40,
             left: 37,
@@ -21,15 +27,7 @@
             up: 38
         });
 
-        stage.on("frame", car.onframe, car);
-
-        stage.on("size", function (e) {
-            // map
-        });
-
-        stage.addActor(car);
-
-        stage.activate();
+        car.init();
 
         debug.displayFps(stage);
 
@@ -37,7 +35,6 @@
 
         var btnOn = document.getElementById("on"),
             btnOff = document.getElementById("off");
-        btnOff.focus();
         btnOn.onclick = function () {
             stage.activate();
             btnOff.focus();
@@ -46,8 +43,8 @@
             stage.deactivate();
             btnOn.focus();
         };
+        btnOff.focus();
     }
 
 })();
-
 

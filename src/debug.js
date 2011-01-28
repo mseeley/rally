@@ -1,9 +1,7 @@
 (function () {
 
-    const FILL_STYLE = "red";
-
-    var viewportWidth = 3000,
-        viewportHeight = 3000;
+    const FILL_STYLE = "red",
+          STROKE_STYLE = "skyblue";
 
     function Fps (stage) {
         var input = document.createElement("input");
@@ -56,34 +54,39 @@
                 var stage = this.stage;
                 clearInterval(this.interval);
                 stage.off("frame", this.onframe, this);
+                this.input.value = '';
             }
         }
     };
     
     debug = {
         axes: function (ctx) {
+            var c = ctx.canvas,
+                w = c.width,
+                h = c.height;
+
             ctx.save();
 
-            ctx.strokeStyle = "#ccc";
+            ctx.strokeStyle = STROKE_STYLE;
             ctx.font = "normal 10px sans-serif";
 
             // label axes
             ctx.textBaseline = "top";
-            ctx.fillStyle = "#666";
+            ctx.fillStyle = FILL_STYLE;
             ctx.fillText("x", 50, 5);
             ctx.fillText("y", 5, 50);
 
             // vertical axis
             ctx.beginPath();
-            ctx.moveTo(-0.5, -viewportHeight);
-            ctx.lineTo(-0.5, viewportHeight);
+            ctx.moveTo(-0.5, -h);
+            ctx.lineTo(-0.5, h);
             ctx.stroke();
             ctx.closePath();
             
             // horizontal axis
             ctx.beginPath();
-            ctx.moveTo(-viewportWidth, -0.5);
-            ctx.lineTo(viewportWidth, -0.5);
+            ctx.moveTo(-w, -0.5);
+            ctx.lineTo(w, -0.5);
             ctx.stroke();
             ctx.closePath();        
 
@@ -110,7 +113,7 @@
 
             for (i; i < len; i++) {
                 pt = pts[i];
-                ctx.fillRect(pt[0], pt[1], 1, 1);
+                ctx.fillRect(pt.x, pt.y, 1, 1);
             }
             
             ctx.restore();
@@ -126,7 +129,7 @@
 
             for (i; i < len; i++) {
                 pt = rally.math.indexToPoint(idxs[i], w);
-                ctx.fillRect(pt[0], pt[1], 1, 1);
+                ctx.fillRect(pt.x, pt.y, 1, 1);
             }
             
             ctx.restore();

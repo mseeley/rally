@@ -1,20 +1,21 @@
 (function () {
 
-    function Stage (desc) {
-        var el = desc.element;
+    const FPS = 55;
 
+    function Stage (el) {
         this.element = el;
-        this.width = desc.width;
-        this.height = desc.height;
-        this.fps = desc.fps;
+        this.width = el.offsetWidth;
+        this.height = el.offsetHeight;
+
         this.keys = [];
+        this.children = [];
    }
     
     Stage.prototype = publisher.extend({
+        children: null,
         element: null,
         width: null,
         height: null,
-        fps: null,
         keys: null,
         isActive: false,
 
@@ -40,7 +41,7 @@
                 kc.on("keystart", onkey, this);
                 kc.on("keyend", onkey, this);
                 
-                timer.set(this.onframe, 1000 / this.fps, this);
+                timer.set(this.onframe, 1000 / FPS, this);
                 
                 this.isActive = isActive;
                 this.fire("active", {
@@ -57,7 +58,7 @@
                 kc.off("keystart", onkey, this);
                 kc.off("keyend", onkey, this);
 
-                timer.clear(this.onframe, 1000 / this.fps, this);
+                timer.clear(this.onframe, 1000 / FPS, this);
                
                 this.isActive = isActive;
                 this.fire("active", {
@@ -72,6 +73,8 @@
             this.width = w;
             this.height = h;
 
+// TODO: Change width and height of stage
+
             this.fire("size", {
                 width: w,
                 height: h
@@ -80,8 +83,9 @@
 
         // Child management
         
-        addActor: function (actor) {
-            this.element.appendChild(actor.canvas);
+        addChild: function (child) {
+            this.children.push(child);
+            this.element.appendChild(child.canvas);
         }
     });
 

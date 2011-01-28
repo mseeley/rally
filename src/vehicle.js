@@ -3,14 +3,7 @@
     const UP = "up",
           DOWN = "down",
           LEFT = "left",
-          RIGHT = "right",
-
-          // Commonly used values or references
-
-          M = rally.math,
-          PI_RADIANS = M.PI_RADIANS,
-          SIN = M.SIN,
-          COS = M.COS;
+          RIGHT = "right";
     
     function Vehicle (w, h) {
         rally.Actor.apply(this, arguments);
@@ -64,18 +57,11 @@
         },
         onframe: function (e) {
             var rotationStep = Vehicle.HANDLING * this.handling,
-                asRadians = this.rotation * PI_RADIANS,
                 speed = this.speed,
                 eventKeys = e.keys,
                 keys = this.keys,
                 r = 0;
  
-            if (eventKeys.indexOf(keys[LEFT]) > -1) {
-                r = -rotationStep;
-            } else if (eventKeys.indexOf(keys[RIGHT]) > -1) {
-                r = rotationStep;
-            }
-
             if (eventKeys.indexOf(keys[DOWN]) > -1) {
                 speed += 0.5;
             } else if (eventKeys.indexOf(keys[UP]) > -1) {
@@ -90,27 +76,33 @@
                 speed = -10;
             }
 
-            // Calculate velocity, store motion property values
+            if (eventKeys.indexOf(keys[LEFT]) > -1) {
+                r = -rotationStep;
+            } else if (eventKeys.indexOf(keys[RIGHT]) > -1) {
+                r = rotationStep;
+            }
 
-            vx = SIN(asRadians) * speed;
-            vy = -(COS(asRadians) * speed);
-            
+            // Calculate velocity, store motion property values
+// TODO: Avoid creating a new Point on every frame, eliminate instantiation time and GC
+            var pt = new rally.Point(),
+                v = pt.velocity(this.rotation + r, speed),
+                vx = v.x,
+                vy = v.y;
+
             this.speed = speed;
+// TODO: vx and vy can be used to move bounds?            
             //this.vx = vx;
             //this.vy = vy;
  
             // Set Actor interface properties, update!
 
+// TODO: Check if rotation and velocity causes a hit on another actor
+
             this.rotation += r;
             this.x -= vx;
             this.y -= vy;
             this.update();
-
-            // Sample bounce off top
-            //if (this.y <= this.regY) {
-            //    this.speed *= -0.6;
-            //}
-       }
+        }
     });
 
     rally.Vehicle = Vehicle;
