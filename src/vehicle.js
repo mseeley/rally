@@ -3,9 +3,8 @@
     const UP = "up",
           DOWN = "down",
           LEFT = "left",
-          RIGHT = "right"
-
-          VELOCITY = rally.Point.velocity;
+          RIGHT = "right",
+          VELOCITY = rally.point.velocity;
     
     function Vehicle (w, h) {
         rally.Actor.apply(this, arguments);
@@ -92,8 +91,8 @@
 
             this.speed = speed;
             this.rotation = r;
-            this.x -= v.x;
-            this.y -= v.y;
+            this.x -= v[0];
+            this.y -= v[1];
             this.update();
         }
     });

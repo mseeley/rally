@@ -5,91 +5,83 @@
           PI_RADIANS = M.PI / 180,
           ROUND = M.round,
           SIN = M.sin,
-          COS = M.cos;
+          COS = M.cos,
+          // All floats rounded to the nearest thousandth
+          PRECISION = 1000,
+          // 1e-9 == 0.00001
+          EPSILON = 1e-5;
 
-    function Point (x, y) {
-        this.x = x;
-        this.y = y;
+    // From http://floating-point-gui.de
+    function nearlyEqual (a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
+        var diff = Math.abs(a - b);
+        return (a || b) ? diff / (a + b) < EPSILON : diff < (EPSILON * EPSILON);
     }
 
-    Point.velocity = function (angle, speed) {
-        angle *= PI_RADIANS;
+    rally.point = {
 
-        return {
-            x: SIN(angle) * speed,
-            y: -(COS(angle) * speed)
-        };
-    };
+        PRECISION: PRECISION,
 
-    Point.prototype = {
-        x: null,
-        y: null,
-        toIndex: function (w) {
-            return (this.x + (this.y * w)) * 4;
+        EPSILON: EPSILON,
+
+        toIndex: function (pt, w) {
+            return (pt[0] + (pt[1] * w)) * 4;
         },
 
         fromIndex: function (idx, w) {
             idx /= 4;
-            this.x = FLOOR(idx % w);
-            this.y = FLOOR(idx / w); 
+            return [
+                FLOOR(idx % w),
+                FLOOR(idx / w) 
+            ];
         },
 
-        distance: function (pt) {
-            var dx = this.x - pt.x,
-                dy = this.y - pt.y;
+        distance: function (pt1, pt2) {
+            var dx = pt1[0] - pt2[0],
+                dy = pt1[1] - pt2[1],
+                d = M.sqrt(dx * dx + dy * dy);
 
-            return M.sqrt(dx * dx + dy * dy);
+            return ROUND(d * PRECISION) / PRECISION;
         },
 
-        // Finds global coordinations of x and y coordinate relative to the
-        // sources's current x/y
-        toGlobal: function(source) {
-            var sourceX = source.x,
-                sourceY = source.y,
-                rotation = source.rotation,
-                localX = this.x,
-                localY = this.y,
-                sin = 0,
-                cos = 1,
-                r;
-
-            if (rotation) {
-                r = rotation * RADIANS;
-                cos = COS(r);
-                sin = SIN(r);
-            }
-            
-            return {
-                x: localX * cos + localY * -sin + sourceX,
-                y: localX * sin + localY * cos + sourceY
-            }
-	},
-
-        rotate: function (angle, origin) {
+        rotate: function (pt, angle, origin) {
             angle *= PI_RADIANS;
 
             var cos = COS(angle),
                 sin = SIN(angle),
-                originX = origin ? origin.x : 0,
-                originY = origin ? origin.y : 0,
-                deltaX = this.x - originX,
-                deltaY = this.y - originY;
+                originX = origin ? origin[0] : 0,
+                originY = origin ? origin[1] : 0,
+                deltaX = pt[0] - originX,
+                deltaY = pt[1] - originY,
+                x = deltaX * cos - deltaY * sin + originX,
+                y = deltaX * sin + deltaY * cos + originY;
 
-            return {
-                x: ROUND(originX + (deltaX * cos) - (deltaY * sin)),
-                y: ROUND(originY + (deltaX * sin) - (deltaY * cos))
-            };
+            return [
+                ROUND(x * PRECISION) / PRECISION,
+                ROUND(y * PRECISION) / PRECISION
+            ];
         },
 
-        transform: function (x, y, angle, origin) {
+        transform: function (pt, delta, angle, origin) {
         },
 
-        toString: function () {
-            return "Point (" + this.x + ", " + this.y + ")";
+        velocity: function (angle, speed) {
+            angle *= PI_RADIANS;
+
+            var vx = SIN(angle) * speed,
+                vy = -(COS(angle) * speed);
+
+            return [
+                ROUND(vx * PRECISION) / PRECISION,
+                ROUND(vy * PRECISION) / PRECISION
+            ];
+        },
+
+        nearlyEqual: function (pt1, pt2) {
+            // UNTESTED
+            return nearlyEqual(pt1[0], pt2[0]) && nearlyEqual(pt1[1], pt2[1]);
         }
-
     };
-
-    rally.Point = Point; 
 
 })();

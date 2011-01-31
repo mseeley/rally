@@ -90,7 +90,7 @@
 
             ctx.drawImage(img, -rx, -ry);
             //debug.origin(ctx);
-            debug.axes(ctx);
+            //debug.axes(ctx);
     
             // Restore to natural origin as getOpaque doesn't have knowledge
             // of the current origin.

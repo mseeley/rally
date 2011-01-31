@@ -109,11 +109,16 @@
 
             var i = 0,
                 len = pts.length,
-                pt;
+                pt,
+                x = 0,
+                y = 1;
 
             for (i; i < len; i++) {
                 pt = pts[i];
-                ctx.fillRect(pt.x, pt.y, 1, 1);
+
+                console.log("points()", pt[x], pt[y]);
+                
+                ctx.fillRect(pt[x], pt[y], 1, 1);
             }
             
             ctx.restore();
