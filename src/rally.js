@@ -49,20 +49,8 @@
                 points: points,
                 hash: hash
             };
-        },
-
-        // Simple img loader encapsulation
-        // TODO: Not appropriate to assign method here, perhaps Actor.loadImg
-        loadImg: function (src, callback, scope) {
-            var img = document.createElement("img");
-
-            img.onload = function () {
-                callback.call(scope, this);
-                img = null;
-            };
-
-            img.src = src;
         }
+
     };
 
 })(this);

@@ -83,9 +83,14 @@
 
         // Child management
         
-        addChild: function (child) {
-            this.children.push(child);
-            this.element.appendChild(child.canvas);
+        addChild: function (child, idx) {
+            var el = this.element,
+                children = this.children;
+
+            children.splice(idx, 0, child);
+            children.forEach(function (child) {
+                el.insertBefore(child.canvas, el.firstElementChild);
+            });
         }
     });
 

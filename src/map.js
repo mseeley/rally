@@ -5,7 +5,9 @@
     }
 
     Map.prototype = lang.merge(rally.Actor.prototype, {
-
+        toString: function () {
+            return "Map";
+        }
     });
 
     rally.Map = Map;

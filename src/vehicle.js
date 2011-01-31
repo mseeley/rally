@@ -94,6 +94,9 @@
             this.x -= v[0];
             this.y -= v[1];
             this.update();
+        },
+        toString: function () {
+            return "Vehicle";
         }
     });
 

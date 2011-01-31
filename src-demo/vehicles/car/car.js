@@ -16,24 +16,31 @@
         mrs: 1,
         init: function () {
     
-            var expected = 2,
-                actual = 0,
-                self = this,
-                onload = function () {
-                    if (++actual === expected) {
-                        self.fire("init");
-                        self = null;
+            var ready = 0,
+                assets = [{
+                    src: VISIBLE_SRC,
+                    fn: function (img) {
+                        this.setImage(img);
+                        this.regX = img.width / 2;
+                        this.regY = img.height * 0.35;
                     }
-                };
+                }, {
+                    src: BOUNDS_SRC,
+                    fn: function (img) {
+                        //
+                    }
+                }];
 
-            rally.loadImg(VISIBLE_SRC, function (img) {
-                this.img = img;
-                this.regX = img.width / 2;
-                this.regY = img.height * 0.35;
-                onload();
+            assets.forEach(function (asset) {
+                this.load(asset.src, function (img) {
+                    asset.fn.call(this, img);
+                    if (++ready == assets.length) {
+                        this.fire("init");
+                    }
+                }, this);
             }, this);
 
-            rally.loadImg(BOUNDS_SRC, function (img) {
+            //this.load(BOUNDS_SRC, function (img) {
                 // create canvas same size as img
                 // draw image at 0, 0
                 // getImagedata for entire canvas
@@ -47,10 +54,10 @@
 
                 this.bounds = rally.getOpaque(ctx);
                 */
-                onload();
-            }, this);
+                //onload();
+            //});
 
-       }
+        }
     });
 
     if (!global.vehicles) {

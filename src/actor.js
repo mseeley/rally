@@ -30,19 +30,46 @@
         regY: 0,
         r: 0,
 
-        // Dimension shadow properties, used for clearing
+        // Dimension shadow properties, used for clearing dirty frame regions
 
         _x: null,
         _y: null,
         _r: null,
         
+        //
         // Abstract methods
+        //
 
         init: function () {},
         onframe: function (e) {},
         onresize: function (e) {},
 
+        //
         // Generic methods
+        //
+
+        load: function (src, callback, scope) {
+            var img = document.createElement("img");
+
+            img.onload = function () {
+                callback.call(scope, this);
+                img = null;
+            };
+
+            img.src = src;
+        },
+
+        setImage: function (img) {
+            this.img = img;
+            this.w = img.w;
+            this.h = img.h;
+        },
+
+        setBounds: function (img) {
+            // parse data
+            // save it
+            // done
+        },
 
         update: function () {
             var ctx = this.context,
@@ -67,15 +94,15 @@
 
                 // Clearing entire canvas is easier when debugging
 
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
                 // Clear only the dirty frame data for performance
 
-                //ctx.save();
-                //ctx.translate(this._x, this._y);
-                //ctx.rotate(this._r);
-                //ctx.clearRect(-rx * 1.5, -ry * 1.5, img.width * 1.5, img.height * 1.5);
-                //ctx.restore();
+                ctx.save();
+                ctx.translate(this._x, this._y);
+                ctx.rotate(this._r);
+                ctx.clearRect(-rx * 1.5, -ry * 1.5, img.width * 1.5, img.height * 1.5);
+                ctx.restore();
             }
 
             // Draw the new frame
