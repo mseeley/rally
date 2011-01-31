@@ -5,9 +5,10 @@
         var stage = new rally.Stage(document.getElementById("stage")),
             car = new vehicles.Car(stage.width, stage.height),
             ready = 0,
-            onready = function (e) {
+            expected = 1,
+            oninit = function (e) {
                 stage.addChild(e.source);
-                if (++ready == stage.children.length) {
+                if (++ready == expected) {
                     car.x = 30;//stage.width / 2;
                     car.y = 30;//stage.height / 2;
                     car.update();
@@ -17,7 +18,7 @@
                 }
             };
 
-        car.on("ready", onready);
+        car.on("init", oninit);
         
         car.setKeys({
             down: 40,

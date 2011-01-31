@@ -1,7 +1,9 @@
 (function () {
 
     const CANVAS = document.createElement("canvas"),
-          PI_RADIANS = Math.PI / 180;
+          PI_RADIANS = Math.PI / 180,
+          PRECISION = rally.point.PRECISION,
+          ROUND = Math.round;
 
     function Actor (w, h) {
         var canvas = CANVAS.cloneNode(false);
@@ -13,7 +15,6 @@
     }
 
     Actor.prototype = publisher.extend({
-        
         canvas: null,
         context: null,
         hitPoints: null,
@@ -27,13 +28,13 @@
         y: 0,
         regX: 0,
         regY: 0,
-        rotation: 0,
+        r: 0,
 
         // Dimension shadow properties, used for clearing
 
         _x: null,
         _y: null,
-        _rotation: null,
+        _r: null,
         
         // Abstract methods
 
@@ -47,7 +48,7 @@
             var ctx = this.context,
                 pos = this.position,
                 img = this.img,
-                r = this.rotation,
+                r = ROUND((this.r * PI_RADIANS) * PRECISION) / PRECISION,
                 x = this.x,
                 y = this.y,
 
@@ -56,10 +57,8 @@
                 rx = this.regX,
                 ry = this.regY;
             
-            // setImage() must be called before update()
-            
             if (!img) {
-               return;
+                return;
             }
 
             // Clearing operations assume assume regX, regY, and img are static
@@ -74,7 +73,7 @@
 
                 //ctx.save();
                 //ctx.translate(this._x, this._y);
-                //ctx.rotate(this._rotation * PI_RADIANS);
+                //ctx.rotate(this._r);
                 //ctx.clearRect(-rx * 1.5, -ry * 1.5, img.width * 1.5, img.height * 1.5);
                 //ctx.restore();
             }
@@ -83,14 +82,12 @@
 
             ctx.save();
             ctx.translate(x, y);
-            ctx.rotate(r * PI_RADIANS);
+            ctx.rotate(r);
 
             // Registration points are faked by drawing the image the inverse 
             // of the reg points.
 
             ctx.drawImage(img, -rx, -ry);
-            //debug.origin(ctx);
-            //debug.axes(ctx);
     
             // Restore to natural origin as getOpaque doesn't have knowledge
             // of the current origin.
@@ -102,11 +99,11 @@
             //var pixelData = rally.getOpaque(ctx);            
             //debug.points(ctx, this.bounds.points);
 
-            // Save position and rotation for clearing dirty frame region
+            // Cache position and rotation for clearing dirty frame region.
             
             this._x = x;
             this._y = y;
-            this._rotation = r;
+            this._r = r;
         }
     });
 

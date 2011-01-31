@@ -61,8 +61,8 @@
             var rotationStep = Vehicle.HANDLING * this.handling,
                 eventKeys = e.keys,
                 speed = this.speed,
-                r = this.rotation,
                 keys = this.keys,
+                r = this.r,
                 v;
  
             if (eventKeys.indexOf(keys[DOWN]) > -1) {
@@ -90,7 +90,7 @@
 // TODO: Check if velocity causes a hit
 
             this.speed = speed;
-            this.rotation = r;
+            this.r = r;
             this.x -= v[0];
             this.y -= v[1];
             this.update();

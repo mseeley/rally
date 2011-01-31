@@ -1,7 +1,7 @@
 (function (global) {
 
-    const BOUNDS_SRC = "car/bounds.png";
-    const VISIBLE_SRC = "car/visible.png";
+    const BOUNDS_SRC = "vehicles/car/bounds.png";
+    const VISIBLE_SRC = "vehicles/car/visible.png";
 
     function Car (w, h) {
         rally.Vehicle.apply(this, arguments);
@@ -21,7 +21,7 @@
                 self = this,
                 onload = function () {
                     if (++actual === expected) {
-                        self.fire("ready");
+                        self.fire("init");
                         self = null;
                     }
                 };
@@ -34,6 +34,10 @@
             }, this);
 
             rally.loadImg(BOUNDS_SRC, function (img) {
+                // create canvas same size as img
+                // draw image at 0, 0
+                // getImagedata for entire canvas
+                // delete canvas
                 /*
                 var c = document.createElement("canvas"),
                     ctx = c.getContext("2d"),
