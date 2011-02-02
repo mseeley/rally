@@ -10,7 +10,7 @@
         this.keys = [];
         this.children = [];
    }
-    
+
     Stage.prototype = publisher.extend({
         children: null,
         element: null,
@@ -40,9 +40,9 @@
 
                 kc.on("keystart", onkey, this);
                 kc.on("keyend", onkey, this);
-                
+
                 timer.set(this.onframe, 1000 / FPS, this);
-                
+
                 this.isActive = isActive;
                 this.fire("active", {
                     isActive: isActive
@@ -59,7 +59,7 @@
                 kc.off("keyend", onkey, this);
 
                 timer.clear(this.onframe, 1000 / FPS, this);
-               
+
                 this.isActive = isActive;
                 this.fire("active", {
                     isActive: isActive
@@ -68,7 +68,7 @@
         },
 
         // Dimension
-        
+
         size: function (w, h) {
             this.width = w;
             this.height = h;
@@ -82,7 +82,7 @@
         },
 
         // Child management
-        
+
         addChild: function (child, idx) {
             var el = this.element,
                 children = this.children;

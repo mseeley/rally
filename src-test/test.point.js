@@ -7,6 +7,7 @@
           CANVAS_WIDTH = 11;
 
     var point = rally.point,
+        math = rally.math,
         data = [
             // registration point
             [0, 0, 0],
@@ -29,7 +30,7 @@
                 dx = p1[0] - p2[0],
                 dy = p1[1] - p2[1],
                 d = Math.sqrt(dx * dx + dy * dy),
-                expected = Math.round(d * point.PRECISION) / point.PRECISION;
+                expected = Math.round(d * math.PRECISION) / math.PRECISION;
 
             return expected == point.distance(p1, p2);
         },
@@ -125,7 +126,50 @@
             }
 
             return pass;
+        },
+
+        "point: opaque points": function (del) {
+            var canvas = document.createElement("canvas"),
+                ctx = canvas.getContext("2d");
+
+            canvas.width = 8;
+            canvas.height = 8;
+
+            var img = document.createElement("img");
+            img.onload = del(function () {
+                ctx.drawImage(img, 0, 0);
+
+                var pixels = point.opaque(ctx).points;
+
+                return pixels.length === 4 &&
+                    (pixels[0][0] === 0 && pixels[0][1] === 0) &&
+                    (pixels[1][0] === 3 && pixels[1][1] === 0) &&
+                    (pixels[2][0] === 0 && pixels[2][1] === 3) &&
+                    (pixels[3][0] === 3 && pixels[3][1] === 3);
+
+            });
+            img.src = "img/getopaque1.png";
+        },
+
+        "point: opaque hash": function (del) {
+            var canvas = document.createElement("canvas"),
+                ctx = canvas.getContext("2d");
+
+            canvas.width = 8;
+            canvas.height = 8;
+
+            var img = document.createElement("img");
+            img.onload = del(function () {
+                ctx.drawImage(img, 0, 0);
+
+                var hash = point.opaque(ctx).hash;
+
+                return hash[0] && hash[0][0] && hash[0][3] &&
+                       hash[3] && hash[3][0] && hash[3][3];
+            });
+            img.src = "img/getopaque1.png";
         }
+ 
     });
 
 })();

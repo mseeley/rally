@@ -7,7 +7,7 @@
 
   var timeout = "Timeout",
       interval = "Interval",
-      method = interval,
+      method = timeout,
       //method = timeout,
       slice = [].slice,
       timers = {

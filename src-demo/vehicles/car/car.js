@@ -1,7 +1,10 @@
 (function (global) {
 
-    const BOUNDS_SRC = "vehicles/car/bounds.png";
-    const VISIBLE_SRC = "vehicles/car/visible.png";
+    var _round = rally.math.round;
+
+    const BOUNDS_SRC = "vehicles/car/bounds.png",
+          COLLISION_SRC = "vehicles/car/collision.png",
+          VISIBLE_SRC = "vehicles/car/visible.png";
 
     function Car (w, h) {
         rally.Vehicle.apply(this, arguments);
@@ -15,23 +18,29 @@
         mfs: 1,
         mrs: 1,
         init: function () {
-    
+//FIXME: This loading procession will be duplicated in all subclasses; move?
+//FIXME: Same code as Base.init
+//FIXME: Refactor. Too much .call, too much code
             var ready = 0,
-                assets = [{
-                    src: VISIBLE_SRC,
-                    fn: function (img) {
-                        this.setImage(img);
-                        this.regX = img.width / 2;
-                        this.regY = img.height * 0.35;
+                assets = [
+                    {
+                        src: VISIBLE_SRC,
+                        fn: function (img) {
+                            this.setImage(img);
+                            this.regX = _round(img.width / 2);
+                            this.regY = _round(img.height * 0.35);
+                        }
+                    }, {
+                        src: BOUNDS_SRC,
+                        fn: this.setBounds
+                    }, {
+                        src: COLLISION_SRC,
+                        fn: this.setCollision
                     }
-                }, {
-                    src: BOUNDS_SRC,
-                    fn: function (img) {
-                        //
-                    }
-                }];
+                ];
 
             assets.forEach(function (asset) {
+                var self = this;
                 this.load(asset.src, function (img) {
                     asset.fn.call(this, img);
                     if (++ready == assets.length) {
@@ -39,23 +48,6 @@
                     }
                 }, this);
             }, this);
-
-            //this.load(BOUNDS_SRC, function (img) {
-                // create canvas same size as img
-                // draw image at 0, 0
-                // getImagedata for entire canvas
-                // delete canvas
-                /*
-                var c = document.createElement("canvas"),
-                    ctx = c.getContext("2d"),
-                    opaque;
-
-                ctx.drawImage(img, 0, 0);
-
-                this.bounds = rally.getOpaque(ctx);
-                */
-                //onload();
-            //});
 
         }
     });

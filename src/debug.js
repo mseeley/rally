@@ -7,7 +7,7 @@
         var input = document.createElement("input");
         input.readOnly = true;
         input.style.width = "50px";
-        
+
         stage.element.parentNode.appendChild(input);
         stage.on("active", this.onactive, this);
 
@@ -45,7 +45,7 @@
                 this.interval = setInterval(function () {
                     self.update();
                 }, this.scale);
-                
+
                 stage.on("frame", this.onframe, this);
            }
         },
@@ -58,7 +58,7 @@
             }
         }
     };
-    
+
     debug = {
         axes: function (ctx) {
             var c = ctx.canvas,
@@ -82,13 +82,13 @@
             ctx.lineTo(-0.5, h);
             ctx.stroke();
             ctx.closePath();
-            
+
             // horizontal axis
             ctx.beginPath();
             ctx.moveTo(-w, -0.5);
             ctx.lineTo(w, -0.5);
             ctx.stroke();
-            ctx.closePath();        
+            ctx.closePath();
 
             ctx.restore();
         },
@@ -115,12 +115,9 @@
 
             for (i; i < len; i++) {
                 pt = pts[i];
-
-                console.log("points()", pt[x], pt[y]);
-                
                 ctx.fillRect(pt[x], pt[y], 1, 1);
             }
-            
+
             ctx.restore();
         },
         indices: function (ctx, idxs) {
@@ -133,10 +130,10 @@
                 pt;
 
             for (i; i < len; i++) {
-                pt = rally.math.indexToPoint(idxs[i], w);
-                ctx.fillRect(pt.x, pt.y, 1, 1);
+                pt = rally.point.fromIndex(idxs[i], w);
+                ctx.fillRect(pt[0], pt[1], 1, 1);
             }
-            
+
             ctx.restore();
         },
         displayFps: function (stage) {

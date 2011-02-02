@@ -21,19 +21,20 @@
                 }
             };
 
+// TODO: See below
+//      car.x = map.startX;
+//      car.y = map.startY;
+
         car.x = stage.width / 2;
-        car.y = stage.height / 2;
+        car.y = stage.height / 3;
+
+        car.addCollisionTarget(map);
         car.setKeys({
             down: 40,
             left: 37,
             right: 39,
             up: 38
         });
-
-// TODO: See below
-//      car.addHitTarget(map);
-//      car.x = map.startX;
-//      car.y = map.startY;
 
         children.forEach(function (child) {
             child.on("init", oninit);
@@ -55,8 +56,7 @@
             btnOn.focus();
         };
         btnOff.focus();
-    
+
     }
 
 })();
-

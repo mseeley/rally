@@ -1,29 +1,16 @@
 (function () {
 
-    const M = Math,
-          FLOOR = M.floor,
-          PI_RADIANS = M.PI / 180,
-          ROUND = M.round,
-          SIN = M.sin,
-          COS = M.cos,
-          // All floats rounded to the nearest thousandth
-          PRECISION = 1000,
-          // 1e-9 == 0.00001
-          EPSILON = 1e-5;
+    var _math = Math,
+        _floor = _math.floor,
+        _sin = _math.sin,
+        _cos = _math.cos,
+        _sqrt = _math.sqrt,
+        _round = rally.math.round,
+        _canvas = document.createElement("canvas");
 
-    // From http://floating-point-gui.de
-    function nearlyEqual (a, b) {
-        a = Math.abs(a);
-        b = Math.abs(b);
-        var diff = Math.abs(a - b);
-        return (a || b) ? diff / (a + b) < EPSILON : diff < (EPSILON * EPSILON);
-    }
+    const PI_RADIANS = _math.PI / 180;
 
-    rally.point = {
-
-        PRECISION: PRECISION,
-
-        EPSILON: EPSILON,
+    var point = {
 
         toIndex: function (pt, w) {
             return (pt[0] + (pt[1] * w)) * 4;
@@ -32,24 +19,24 @@
         fromIndex: function (idx, w) {
             idx /= 4;
             return [
-                FLOOR(idx % w),
-                FLOOR(idx / w) 
+                _floor(idx % w),
+                _floor(idx / w)
             ];
         },
 
         distance: function (pt1, pt2) {
             var dx = pt1[0] - pt2[0],
                 dy = pt1[1] - pt2[1],
-                d = M.sqrt(dx * dx + dy * dy);
+                d = _sqrt(dx * dx + dy * dy);
 
-            return ROUND(d * PRECISION) / PRECISION;
+            return _round(d);
         },
 
         rotate: function (pt, angle, origin) {
             angle *= PI_RADIANS;
 
-            var cos = COS(angle),
-                sin = SIN(angle),
+            var cos = _cos(angle),
+                sin = _sin(angle),
                 originX = origin ? origin[0] : 0,
                 originY = origin ? origin[1] : 0,
                 deltaX = pt[0] - originX,
@@ -58,30 +45,115 @@
                 y = deltaX * sin + deltaY * cos + originY;
 
             return [
-                ROUND(x * PRECISION) / PRECISION,
-                ROUND(y * PRECISION) / PRECISION
+                _round(x), _round(y)
             ];
         },
 
-        transform: function (pt, delta, angle, origin) {
+        transformAll: function (pts, angle, translate, origin) {
+            //console.log(
+            //    "transformAll()",
+            //    "angle", angle,
+            //    "translate", translate,
+            //    "origin", origin
+            //);
+
+            var points = [],
+                hash = {},
+                i = 0,
+                len = pts.length,
+                x = translate[0],
+                tx = x - origin[0],
+                y = translate[1],
+                ty = y - origin[1],
+                x1,
+                y1,
+                pt;
+
+            for (i; i < len; i++) {
+                x1 = pts[i][0] + tx;
+                y1 = pts[i][1] + ty;
+                points[i] = point.rotate([x1, y1], angle, [x, y]);
+
+// FIXME: Similar code to opaque() although opaque() traverses imageData
+
+                if (hash[x1] == null) {
+                    hash[x1] = {};
+                }
+
+                hash[x1][y1] = 1;
+            }
+
+//FIXME: tranformToHash, transformToPoints
+//FIXME: Make opaqueAsHash, opaqueAsPoints
+//FIXME: points is used for collision
+//FIXME: hash is used for bounds values
+
+            return {
+                points: points,
+                hash: hash
+            };
         },
 
         velocity: function (angle, speed) {
             angle *= PI_RADIANS;
 
-            var vx = SIN(angle) * speed,
-                vy = -(COS(angle) * speed);
+            var vx = _sin(angle) * speed,
+                vy = -(_cos(angle) * speed);
 
             return [
-                ROUND(vx * PRECISION) / PRECISION,
-                ROUND(vy * PRECISION) / PRECISION
+                _round(vx), _round(vy)
             ];
         },
 
-        nearlyEqual: function (pt1, pt2) {
-            // UNTESTED
-            return nearlyEqual(pt1[0], pt2[0]) && nearlyEqual(pt1[1], pt2[1]);
+        // Returns an object of pixel information
+
+        opaque: function (img) {
+
+            var w = img.width,
+                h = img.height,
+                ctx = _canvas.getContext("2d");
+
+            _canvas.width = w;
+            _canvas.height = h;
+            ctx.drawImage(img, 0, 0);
+
+            var fromIndex = point.fromIndex,
+                pixels = ctx.getImageData(0, 0, w, h).data,
+                len = pixels.length,
+                points = [],
+                hash = {},
+                i = 3,
+                pt,
+                x,
+                y;
+
+            for (i; i <= len; i+=4) {
+                if (pixels[i] > 0) {
+                    pt = fromIndex(i, w);
+
+                    points[points.length] = pt;
+                    x = pt[0];
+                    y = pt[1];
+
+                    if (hash[x] == null) {
+                        hash[x] = {};
+                    }
+
+                    hash[x][y] = 1;
+                }
+            }
+
+            return {
+                points: points,
+                hash: hash
+            };
+
         }
+
     };
+
+
+    rally.point = point;
+
 
 })();
