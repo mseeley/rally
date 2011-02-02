@@ -2,25 +2,8 @@
 
     var _canvas = document.createElement("canvas"),
         _radians = rally.math.radians,
-        _transformAll = rally.point.transformAll;
-
-    function _updateBounds (inst) {
-        // FIXME: Inline this method,  it's just one call ;)
-        //transformAll: function (pts, angle, translate, origin) {
-        var transformed = _transformAll(
-            inst._bounds.points,
-            inst.r,
-            [inst.x, inst.y],
-            [inst.regX, inst.regY]
-        );
-
-        //console.log(inst._bounds.points);
-        //console.log(transformed.points)
-
-        //debug.points(inst.context, transformed.points);
-
-        inst.bounds = transformed;
-    }
+        _transformAll = rally.point.transformAll,
+        _debug = rally.debug;
 
     function Actor (w, h) {
         var cvs = _canvas.cloneNode(false);
@@ -90,7 +73,7 @@
             // this.bounds will be transformed over time while this._bounds is
             // pristine and untouched.
 
-            // FIXME: Calling opaque twice, cannot have references shared?
+            // FIXME: Calling opaque twice, cannot have references shared!
 
             this.bounds = rally.point.opaque(img);
             this._bounds = rally.point.opaque(img);
@@ -106,19 +89,17 @@
                 x = points[i][0];
                 y = points[i][1];
 
-                //FIXME: Move elsewhere if necessary
+                //FIXME: Move elsewhere, points must be real numbers (!!!)
                 x = Math.round(x);
                 y = Math.round(y);
 
                 if (x in hash && y in hash[x]) {
-                    //console.log("hit on at", x, y);
                     hit = true;
                     break;
                 }
             }
 
             return hit;
-
         },
 
         update: function () {
@@ -148,18 +129,21 @@
             // Clearing operations assume assume regX, regY, and img are static
 
             if (this._x !== null) {
-
-                // Clearing entire canvas; easier when debugging
-
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-                // Or, clear only the dirty frame data for performance
-
-                //ctx.save();
-                //ctx.translate(this._x, this._y);
-                //ctx.rotate(_radians(r));
-                //ctx.clearRect(-rx * 1.5, -ry * 1.5, img.width * 1.5, img.height * 1.5);
-                //ctx.restore();
+                /* debug */
+                if (_debug.show.axes) {
+                    // Clearing entire canvas; easier when debugging
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                } else {
+                /* /debug */
+                    // Or, clear only the dirty frame data for performance
+                    ctx.save();
+                    ctx.translate(this._x, this._y);
+                    ctx.rotate(_radians(r));
+                    ctx.clearRect(-rx * 2, -ry * 2, img.width * 2, img.height * 2);
+                    ctx.restore();
+                /* debug */
+                }
+                /* /debug */
             }
 
             // Cache position and rotation for clearing dirty frame region.
@@ -167,6 +151,13 @@
             this._x = x;
             this._y = y;
             this._r = r;
+
+            this.bounds = _transformAll(
+                this._bounds.points,
+                r,
+                [x, y],
+                [rx, ry]
+            );
 
             // Draw the new frame
 
@@ -177,11 +168,39 @@
             // Registration points are faked by drawing the image the inverse
             // of the reg points.
 
+            /* debug */
+            if (_debug.show.visible) {
+            /* /debug */
             ctx.drawImage(img, -rx, -ry);
+            /* debug */
+            }
+            /* /debug */
+
             ctx.restore();
 
-            _updateBounds(this);
+            /* debug */
+            if (_debug.show.bounds) {
+                _debug.points(ctx, this.bounds.points, "#ccc");
+            }
+            /* /debug */
 
+            /* debug */
+            if (_debug.show.origin || _debug.show.axes) {
+                // origin and axes need to be drawn after bounds
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(_radians(r));
+
+                if (_debug.show.origin) {
+                    _debug.origin(ctx);
+                }
+
+                if (_debug.show.axes) {
+                    _debug.axes(ctx);
+                }
+                ctx.restore();
+            }
+            /* /debug */
         }
     });
 

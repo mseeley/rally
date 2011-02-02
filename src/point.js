@@ -62,8 +62,8 @@
                 i = 0,
                 len = pts.length,
                 x = translate[0],
-                tx = x - origin[0],
                 y = translate[1],
+                tx = x - origin[0],
                 ty = y - origin[1],
                 x1,
                 y1,
@@ -72,9 +72,14 @@
             for (i; i < len; i++) {
                 x1 = pts[i][0] + tx;
                 y1 = pts[i][1] + ty;
-                points[i] = point.rotate([x1, y1], angle, [x, y]);
+                pt = point.rotate([x1, y1], angle, [x, y]);
+                points[i] = pt;
 
 // FIXME: Similar code to opaque() although opaque() traverses imageData
+// FIXME: Hash keys must always be real numbers
+
+                x1 = Math.round(x1);
+                y1 = Math.round(y1);
 
                 if (hash[x1] == null) {
                     hash[x1] = {};

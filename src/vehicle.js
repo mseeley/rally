@@ -3,7 +3,8 @@
     var _transformAll = rally.point.transformAll,
         _velocity = rally.point.velocity,
         _round = rally.math.round,
-        _equal = rally.math.equal;
+        _equal = rally.math.equal,
+        _debug = rally.debug;
 
     const UP = "up",
           DOWN = "down",
@@ -68,9 +69,11 @@
 
 //FIXME: Same code as setBounds. Refactor?
 
-            this.collision = rally.point.opaque(img);
+            this._collision = rally.point.opaque(img);
 
         },
+
+//FIXME: Too verbose
 
         addCollisionTarget: function (actor) {
             this.collisionTargets.push(actor);
@@ -79,7 +82,7 @@
         collisionTest: function (pt, r) {
 
             var points = _transformAll(
-                this.collision.points,
+                this._collision.points,
                 r,
                 [pt[0], pt[1]],
                 [this.regX, this.regY]
@@ -96,38 +99,39 @@
                 }
             }
 
-            debug.points(this.context, points.points)
+            this.collision = points;
 
             return hit;
-
         },
 
         // ~vector transformation
         // determines new x and y based on relative rotation and magnitude vector
         transform: function (direction, speed) {
-            if (_equal(direction, 0) && _equal(speed, 0)) {
+
+            //FIXME: Speed CAN be zero when going from negative to positive (during
+            // bounce!) checking == 0 not valid.
+
+            //FIXME: NEEEEEEED to find a way to return early if there nothing to do
+            //       vx && vx == 0?
+
+            //if (_equal(direction, 0) && _equal(speed, 0)) {
                 // Avoid pushing Actor through update() if position remains unchanged.
                 // FIXME: speed (magnitude) should always be positive, direction should be positive or negative
                 // FIXME: Car images align up y axis, change to x axis (rsulting in a negative speed to go up)
                 // FIXME: speed should reach zero
-                return;
-            }
+                //return;
+            //}
 
             var r = (direction) ? _round((this.r + direction) % 360) : this.r,
                 v = _velocity(r, speed),
                 x = _round(this.x - v[0]),
                 y = _round(this.y - v[1]);
 
-// FIXME: Check for hit and reverse velocity!!!
-
             if (this.collisionTest([x, y], r)) {
-                //v[0] = -v[0];
-                //v[1] = -v[1];
 
-                //x = -x;
-                //y = -y;
+// FIXME: Dupe code
 
-                speed *= -.6;
+                speed *= -.675;
                 v = _velocity(r, speed),
                 x = _round(this.x - v[0]),
                 y = _round(this.y - v[1]);
@@ -146,6 +150,12 @@
             //);
 
             this.update();
+
+            /* debug */
+            if (_debug.show.collision) {
+                _debug.points(this.context, this.collision.points)
+            }
+            /* /debug */
 
         },
 

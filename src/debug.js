@@ -59,8 +59,15 @@
         }
     };
 
-    debug = {
-        axes: function (ctx) {
+    rally.debug = {
+        show: {
+            axes: false,
+            bounds: true,
+            collision: true,
+            origin: false,
+            visible: false
+        },
+        axes: function (ctx, fillStyle) {
             var c = ctx.canvas,
                 w = c.width,
                 h = c.height;
@@ -72,7 +79,7 @@
 
             // label axes
             ctx.textBaseline = "top";
-            ctx.fillStyle = FILL_STYLE;
+            ctx.fillStyle = fillStyle || FILL_STYLE;
             ctx.fillText("x", 50, 5);
             ctx.fillText("y", 5, 50);
 
@@ -92,20 +99,20 @@
 
             ctx.restore();
         },
-        origin: function (ctx) {
+        origin: function (ctx, fillStyle) {
             ctx.save();
 
             ctx.beginPath();
-            ctx.fillStyle = FILL_STYLE;
+            ctx.fillStyle = fillStyle || FILL_STYLE;
             ctx.arc(0, 0, 3, 0, Math.PI * 2);
             ctx.fill();
             ctx.closePath();
 
             ctx.restore();
         },
-        points: function (ctx, pts) {
+        points: function (ctx, pts, fillStyle) {
             ctx.save();
-            ctx.fillStyle = FILL_STYLE;
+            ctx.fillStyle = fillStyle || FILL_STYLE;
 
             var i = 0,
                 len = pts.length,
@@ -120,9 +127,9 @@
 
             ctx.restore();
         },
-        indices: function (ctx, idxs) {
+        indices: function (ctx, idxs, fillStyle) {
             ctx.save();
-            ctx.fillStyle = FILL_STYLE;
+            ctx.fillStyle = fillStyle || FILL_STYLE;
 
             var i = 0,
                 len = idxs.length,
