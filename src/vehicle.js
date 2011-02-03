@@ -14,43 +14,30 @@
     function Vehicle (w, h) {
         rally.Actor.apply(this, arguments);
         this.keys = {};
-        this.collisionTargets = [];
+        this.hitTargets = [];
     }
-
-    // Allow motion valus to be altered by host environment
-
-    lang.mix({
-        ACCELERATION: 1,
-        DECELERATION: 1,
-        BRAKING: 1,
-        HANDLING: 5,
-        MAX_FORWARD_SPEED: 1,
-        MAX_REVERSE_SPEED: .5
-    }, Vehicle);
 
     Vehicle.prototype = lang.merge(rally.Actor.prototype, {
 
-        // All vehicles move using the motion value constants. Sub-classes or
-        // instances can modify these values for unique motion behavior.
-
         accel: 1,
-        decel: 1,
-        handling: 1,
-        braking: 1,
-        mfs: 1,
-        mrs: 1,
+        decel: 0.975,
+        handling: 10,
+
+        mfs: 10,
+        mrs: 5,
 
         // Frame values for motion properties
 
-        //vx: 0,
-        //vy: 0,
         speed: 0,
+        framesStill: 0,
 
         // Object holding keycodes by direction name.
 
         keys: null,
 
-        collisionTargets: null,
+        hitTargets: null,
+        hitPoints: null,
+        _hitPoints: null,
 
         setKeys: function (desc) {
             var k = this.keys,
@@ -65,31 +52,29 @@
             }
         },
 
-        setCollision: function (img) {
+        setHitPoints: function (img) {
 
 //FIXME: Same code as setBounds. Refactor?
 
-            this._collision = rally.point.opaque(img);
+            this._hitpoints = rally.point.opaque(img);
 
         },
 
-//FIXME: Too verbose
-
-        addCollisionTarget: function (actor) {
-            this.collisionTargets.push(actor);
+        addHitTarget: function (actor) {
+            this.hitTargets.push(actor);
         },
 
-        collisionTest: function (pt, r) {
+        hitTest: function (pt, r) {
 
             var points = _transformAll(
-                this._collision.points,
+                this._hitpoints.points,
                 r,
                 [pt[0], pt[1]],
                 [this.regX, this.regY]
             );
 
             var hit = false,
-                targets = this.collisionTargets,
+                targets = this.hitTargets,
                 count = targets.length;
 
             while (count--) {
@@ -99,7 +84,7 @@
                 }
             }
 
-            this.collision = points;
+            this.hit = points;
 
             return hit;
         },
@@ -107,84 +92,77 @@
         // ~vector transformation
         // determines new x and y based on relative rotation and magnitude vector
         transform: function (direction, speed) {
-
-            //FIXME: Speed CAN be zero when going from negative to positive (during
-            // bounce!) checking == 0 not valid.
-
-            //FIXME: NEEEEEEED to find a way to return early if there nothing to do
-            //       vx && vx == 0?
-
-            //if (_equal(direction, 0) && _equal(speed, 0)) {
-                // Avoid pushing Actor through update() if position remains unchanged.
-                // FIXME: speed (magnitude) should always be positive, direction should be positive or negative
-                // FIXME: Car images align up y axis, change to x axis (rsulting in a negative speed to go up)
-                // FIXME: speed should reach zero
-                //return;
-            //}
-
             var r = (direction) ? _round((this.r + direction) % 360) : this.r,
                 v = _velocity(r, speed),
                 x = _round(this.x - v[0]),
                 y = _round(this.y - v[1]);
 
-            if (this.collisionTest([x, y], r)) {
+            if (this.hitTest([x, y], r)) {
+                this.transform(direction, -speed);
+            } else {
+                this.speed = _round(speed);
+                this.x = x;
+                this.y = y;
+                this.r = r;
 
-// FIXME: Dupe code
+                //console.log(
+                //    "transform()",
+                //    "velocity", v,
+                //    "direction", direction,
+                //    "speed", this.speed
+                //);
 
-                speed *= -.675;
-                v = _velocity(r, speed),
-                x = _round(this.x - v[0]),
-                y = _round(this.y - v[1]);
+                this.update();
+
+                /* debug */
+                if (_debug.show.hit) {
+                    _debug.points(this.context, this.hit.points)
+                }
+                /* /debug */
             }
-
-            this.speed = _round(speed);
-            this.x = x;
-            this.y = y;
-            this.r = r;
-
-            //console.log(
-            //    "transform()",
-            //    "velocity", v,
-            //    "direction", direction,
-            //    "speed", this.speed
-            //);
-
-            this.update();
-
-            /* debug */
-            if (_debug.show.collision) {
-                _debug.points(this.context, this.collision.points)
-            }
-            /* /debug */
-
         },
 
         onframe: function (e) {
-            var rotationStep = Vehicle.HANDLING * this.handling,
+            var handling = this.handling,
                 eventKeys = e.keys,
                 speed = this.speed,
                 keys = this.keys,
+                accel = this.accel,
+                mfs = this.mfs,
+                mrs = this.mrs,
                 direction = 0;
 
             if (eventKeys.indexOf(keys[LEFT]) > -1) {
-                direction = -rotationStep;
+                direction = -handling;
             } else if (eventKeys.indexOf(keys[RIGHT]) > -1) {
-                direction = rotationStep;
+                direction = handling;
             }
 
             if (eventKeys.indexOf(keys[DOWN]) > -1) {
-                speed += 0.5;
-                if (speed > 5) {
-                    speed = 5;
+                speed += accel;
+                if (speed > mrs) {
+                    speed = mrs;
                 }
             } else if (eventKeys.indexOf(keys[UP]) > -1) {
-                speed -= 1;
-                if (speed < -10) {
-                    speed = -10;
+                speed -= accel;
+                if (speed < -mfs) {
+                    speed = -mfs;
                 }
             } else if (speed) {
-                speed *= 0.975;
+                speed *= this.decel;
             }
+
+            // Return if the direction or speed hasn't updated in N frames
+
+            if (_equal(direction, 0) && _equal(speed, 0)) {
+                if (this.framesStill++ > 1) {
+                    return;
+                }
+            } else {
+                this.framesStill = 0;
+            }
+
+            // Otherwise, perform the transform
 
             this.transform(direction, speed);
         },

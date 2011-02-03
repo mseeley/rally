@@ -3,7 +3,7 @@
     var _round = rally.math.round;
 
     const BOUNDS_SRC = "vehicles/car/bounds.png",
-          COLLISION_SRC = "vehicles/car/collision.png",
+          HIT_POINTS_SRC = "vehicles/car/hitpoints.png",
           VISIBLE_SRC = "vehicles/car/visible.png";
 
     function Car (w, h) {
@@ -11,12 +11,6 @@
     }
 
     Car.prototype = lang.merge(rally.Vehicle.prototype, {
-        accel: 1,
-        decel: 1,
-        handling: 2.5,
-        braking: 1,
-        mfs: 1,
-        mrs: 1,
         init: function () {
 //FIXME: This loading procession will be duplicated in all subclasses; move?
 //FIXME: Same code as Base.init
@@ -34,8 +28,8 @@
                         src: BOUNDS_SRC,
                         fn: this.setBounds
                     }, {
-                        src: COLLISION_SRC,
-                        fn: this.setCollision
+                        src: HIT_POINTS_SRC,
+                        fn: this.setHitPoints
                     }
                 ];
 

@@ -33,7 +33,7 @@
         car.x = stage.width * .65;
         car.y = stage.height / 3;
 
-        car.addCollisionTarget(map);
+        car.addHitTarget(map);
 
         car.setKeys({
             down: 40,
@@ -42,20 +42,20 @@
             up: 38
         });
 
-        car2 = new vehicles.Car(stage.width, stage.height);
-        car2.x = stage.width * .35;
-        car2.y = stage.height / 3;
-        car2.r = 90;
-        car.addCollisionTarget(car2);
-        car2.addCollisionTarget(car);
-        car2.addCollisionTarget(map);
-        car2.setKeys({
-            up: 87,
-            down: 83,
-            left: 65,
-            right: 68
-        });
-        children.unshift(car2);
+        //car2 = new vehicles.Car(stage.width, stage.height);
+        //car2.x = stage.width * .35;
+        //car2.y = stage.height / 3;
+        //car2.r = 90;
+        //car.addHitTarget(car2);
+        //car2.addHitTarget(car);
+        //car2.addHitTarget(map);
+        //car2.setKeys({
+        //    up: 87,
+        //    down: 83,
+        //    left: 65,
+        //    right: 68
+        //});
+        //children.unshift(car2);
 
         children.forEach(function (child) {
             child.on("init", oninit);

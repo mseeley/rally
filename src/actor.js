@@ -73,7 +73,7 @@
             // this.bounds will be transformed over time while this._bounds is
             // pristine and untouched.
 
-            // FIXME: Calling opaque twice, cannot have references shared!
+// FIXME: Calling opaque twice, cannot have references shared!
 
             this.bounds = rally.point.opaque(img);
             this._bounds = rally.point.opaque(img);

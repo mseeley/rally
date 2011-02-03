@@ -61,11 +61,11 @@
 
     rally.debug = {
         show: {
-            axes: false,
-            bounds: true,
-            collision: true,
-            origin: false,
-            visible: false
+            axes: 0,
+            bounds: 0,
+            collision: 1,
+            origin: 0,
+            visible: 1
         },
         axes: function (ctx, fillStyle) {
             var c = ctx.canvas,
