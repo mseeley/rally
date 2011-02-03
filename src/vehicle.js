@@ -22,6 +22,7 @@
         accel: 1,
         decel: 0.975,
         handling: 10,
+        bounce: .6,
 
         mfs: 10,
         mrs: 5,
@@ -84,7 +85,7 @@
                 }
             }
 
-            this.hit = points;
+            this.hitpoints = points;
 
             return hit;
         },
@@ -98,7 +99,7 @@
                 y = _round(this.y - v[1]);
 
             if (this.hitTest([x, y], r)) {
-                this.transform(direction, -speed);
+                this.transform(direction, -speed * this.bounce);
             } else {
                 this.speed = _round(speed);
                 this.x = x;
@@ -115,8 +116,8 @@
                 this.update();
 
                 /* debug */
-                if (_debug.show.hit) {
-                    _debug.points(this.context, this.hit.points)
+                if (_debug.show.hitpoints) {
+                    _debug.points(this.context, this.hitpoints.points)
                 }
                 /* /debug */
             }

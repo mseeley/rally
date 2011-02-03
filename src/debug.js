@@ -62,10 +62,10 @@
     rally.debug = {
         show: {
             axes: 0,
-            bounds: 0,
-            collision: 1,
+            bounds: 1,
+            hitpoints: 1,
             origin: 0,
-            visible: 1
+            visible: 0
         },
         axes: function (ctx, fillStyle) {
             var c = ctx.canvas,
