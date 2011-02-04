@@ -68,7 +68,7 @@
                 x = data[i][0];
                 y = data[i][1];
                 idx = data[i][2];
-                
+
                 if (point.toIndex([x, y], CANVAS_WIDTH) !== idx) {
                     return false;
                 }
@@ -113,7 +113,7 @@
                 len = parts.length,
                 i = 0,
                 pass = true;
-            
+
             for (i; i < len; i++) {
                 var p = parts[i],
                     actual = point.rotate([p.x, p.y], p.r, [p.cx, p.cy]),
@@ -129,17 +129,9 @@
         },
 
         "point: opaque points": function (del) {
-            var canvas = document.createElement("canvas"),
-                ctx = canvas.getContext("2d");
-
-            canvas.width = 8;
-            canvas.height = 8;
-
             var img = document.createElement("img");
             img.onload = del(function () {
-                ctx.drawImage(img, 0, 0);
-
-                var pixels = point.opaque(ctx).points;
+                var pixels = point.opaque(img).points;
 
                 return pixels.length === 4 &&
                     (pixels[0][0] === 0 && pixels[0][1] === 0) &&
@@ -152,24 +144,16 @@
         },
 
         "point: opaque hash": function (del) {
-            var canvas = document.createElement("canvas"),
-                ctx = canvas.getContext("2d");
-
-            canvas.width = 8;
-            canvas.height = 8;
-
             var img = document.createElement("img");
             img.onload = del(function () {
-                ctx.drawImage(img, 0, 0);
-
-                var hash = point.opaque(ctx).hash;
+                var hash = point.opaque(img).hash;
 
                 return hash[0] && hash[0][0] && hash[0][3] &&
                        hash[3] && hash[3][0] && hash[3][3];
             });
             img.src = "img/getopaque1.png";
         }
- 
+
     });
 
 })();

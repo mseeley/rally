@@ -50,6 +50,7 @@
         //
 
         load: function (assets, callback) {
+            // UNTESTED
             var actual = 0,
                 expected = assets.length,
                 scope = this;
@@ -88,6 +89,7 @@
         },
 
         checkBounds: function (points) {
+            // UNTESTED
             var hash = this.bounds.hash,
                 hit = false,
                 x,

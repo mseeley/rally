@@ -14,7 +14,7 @@
         if (!_canvas) {
             _canvas = document.createElement("canvas");
         }
-        
+
         var w = img.width,
             h = img.height,
             ctx = _canvas.getContext("2d");
@@ -28,9 +28,9 @@
     var point = {
 
         // UNUSED
-        //toIndex: function (pt, w) {
-        //    return (pt[0] + (pt[1] * w)) * 4;
-        //},
+        toIndex: function (pt, w) {
+            return (pt[0] + (pt[1] * w)) * 4;
+        },
 
         fromIndex: function (idx, w) {
             idx /= 4;
@@ -41,14 +41,14 @@
         },
 
         // UNUSED
-        //distance: function (pt1, pt2) {
-        //
-        //    var dx = pt1[0] - pt2[0],
-        //        dy = pt1[1] - pt2[1],
-        //        d = _sqrt(dx * dx + dy * dy);
-        //
-        //    return _round(d);
-        //},
+        distance: function (pt1, pt2) {
+
+            var dx = pt1[0] - pt2[0],
+                dy = pt1[1] - pt2[1],
+                d = _sqrt(dx * dx + dy * dy);
+
+            return _round(d);
+        },
 
         rotate: function (pt, angle, origin) {
             angle *= PI_RADIANS;
