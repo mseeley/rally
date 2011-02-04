@@ -5,8 +5,10 @@
 // TODO: Just pass stage to actor? Better than passing w, h all over the place?
 
         var stage = new rally.Stage(document.getElementById("stage")),
-            car = new vehicles.Car(stage.width, stage.height),
-            map = new maps.Basic(stage.width, stage.height),
+            sw = stage.width,
+            sh = stage.height,
+            car = new vehicles.Car(sw, sh),
+            map = new maps.Basic(sw, sh),
             children = [car, map],
             ready = 0,
             oninit = function (e) {
@@ -30,10 +32,10 @@
 //      car.x = map.startX;
 //      car.y = map.startY;
 
-        car.x = stage.width * .65;
-        car.y = stage.height / 3;
-
         car.addHitTarget(map);
+
+        car.x = sw * .65;
+        car.y = sh / 3;
 
         car.setKeys({
             down: 40,
@@ -42,9 +44,11 @@
             up: 38
         });
 
+        //car.r = -90;
+        //car.x = sw * .65;
         //car2 = new vehicles.Car(stage.width, stage.height);
-        //car2.x = stage.width * .35;
-        //car2.y = stage.height / 3;
+        //car2.x = sw * .35;
+        //car2.y = sh / 3;
         //car2.r = 90;
         //car.addHitTarget(car2);
         //car2.addHitTarget(car);

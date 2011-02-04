@@ -54,11 +54,10 @@
         },
 
         setHitPoints: function (img) {
+            var opaque = rally.point.opaque;
 
-//FIXME: Same code as setBounds. Refactor?
-
-            this._hitpoints = rally.point.opaque(img);
-
+            this.hitpoints = opaque(img);
+            this._hitpoints = opaque(img);
         },
 
         addHitTarget: function (actor) {
@@ -68,13 +67,12 @@
         hitTest: function (pt, r) {
 
             var points = _transformAll(
-                this._hitpoints.points,
-                r,
-                [pt[0], pt[1]],
-                [this.regX, this.regY]
-            );
-
-            var hit = false,
+                    this._hitpoints.points,
+                    r,
+                    [pt[0], pt[1]],
+                    [this.regX, this.regY]
+                ),
+                hit = false,
                 targets = this.hitTargets,
                 count = targets.length;
 
@@ -90,13 +88,26 @@
             return hit;
         },
 
-        // ~vector transformation
-        // determines new x and y based on relative rotation and magnitude vector
+        // determines new x and y based on relative rotation and magnitude
         transform: function (direction, speed) {
             var r = (direction) ? _round((this.r + direction) % 360) : this.r,
                 v = _velocity(r, speed),
                 x = _round(this.x - v[0]),
                 y = _round(this.y - v[1]);
+
+// FIXME: A car should be able to rotate freely when 'parallel parked' against bounds
+
+// FIXME: If hitpoints of two actors overlap this can get stuck in a recursive loop
+//        Actors need to repel each other intelligently; inverting speed is only good
+//        for single Vehicle demos.  Easy to confirm by parking next to a wall then
+//        rotating. Speed is zero so there is no bounce.  Preventing rotation when
+//        there is no speed or translating the car is necessary.  Translating
+//        the car has issues when in tight quarters, perhaps stopping rotation
+//        is the best approach.  Or, hit test rotation separately of velocity (bound
+///       on both direction and speed)
+
+// FIXME: Of course, if Vehicles responded to being hit by moving his problem
+//        would be lessened.  Although imagine being plowed into a wall, nowhere to go
 
             if (this.hitTest([x, y], r)) {
                 this.transform(direction, -speed * this.bounce);
@@ -105,13 +116,6 @@
                 this.x = x;
                 this.y = y;
                 this.r = r;
-
-                //console.log(
-                //    "transform()",
-                //    "velocity", v,
-                //    "direction", direction,
-                //    "speed", this.speed
-                //);
 
                 this.update();
 

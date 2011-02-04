@@ -73,7 +73,7 @@
             this.width = w;
             this.height = h;
 
-// TODO: Change width and height of stage
+//FIXME: Change width and height of stage
 
             this.fire("size", {
                 width: w,

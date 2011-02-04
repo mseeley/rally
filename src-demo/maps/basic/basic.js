@@ -9,22 +9,16 @@
 
     Basic.prototype = lang.merge(rally.Map.prototype, {
         init: function () {
-            var ready = 0,
-                assets = [{
+            var assets = [{
                     src: VISIBLE_SRC,
-                    fn: this.setImage
+                    success: this.setImage
                 }, {
                     src: BOUNDS_SRC,
-                    fn: this.setBounds
+                    success: this.setBounds
                 }];
 
-            assets.forEach(function (asset) {
-                this.load(asset.src, function (img) {
-                    asset.fn.call(this, img);
-                    if (++ready == assets.length) {
-                        this.fire("init");
-                    }
-                }, this);
+            this.load(assets, function () {
+                this.fire("init");
             }, this);
         }
     });

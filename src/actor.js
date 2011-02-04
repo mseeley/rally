@@ -17,7 +17,6 @@
     Actor.prototype = publisher.extend({
         canvas: null,
         context: null,
-        hitPoints: null,
         img: null,
         bounds: null,
         _bounds: null,
@@ -50,15 +49,24 @@
         // Generic methods
         //
 
-        load: function (src, callback, scope) {
-            var img = document.createElement("img");
+        load: function (assets, callback) {
+            var actual = 0,
+                expected = assets.length,
+                scope = this;
 
-            img.onload = function () {
-                callback.call(scope, this);
-                img = null;
-            };
+            assets.forEach(function (asset) {
+                var img = document.createElement("img");
 
-            img.src = src;
+                img.onload = function () {
+                    asset.success.call(scope, img);
+                    if (++actual == expected) {
+                        callback.call(scope);
+                    }
+                    img = null;
+                };
+
+                img.src = asset.src;
+            }, scope);
         },
 
         setImage: function (img) {
@@ -69,14 +77,14 @@
 
         setBounds: function (img) {
 
+            var opaque = rally.point.opaque;
+
             // Not a typo, need two duplicate representations of the points.
             // this.bounds will be transformed over time while this._bounds is
             // pristine and untouched.
 
-// FIXME: Calling opaque twice, cannot have references shared!
-
-            this.bounds = rally.point.opaque(img);
-            this._bounds = rally.point.opaque(img);
+            this.bounds = opaque(img);
+            this._bounds = opaque(img);
         },
 
         checkBounds: function (points) {
@@ -86,12 +94,12 @@
                 y;
 
             for (var i = 0; i < points.length; i++) {
-                x = points[i][0];
-                y = points[i][1];
 
-                //FIXME: Move elsewhere, points must be real numbers (!!!)
-                x = Math.round(x);
-                y = Math.round(y);
+                // Fuzzy hit detection; rounds the float coordinates to increase
+                // the likely hood of getting a hit.
+
+                x = Math.round(points[i][0]);
+                y = Math.round(points[i][1]);
 
                 if (x in hash && y in hash[x]) {
                     hit = true;
@@ -114,17 +122,6 @@
 
                 rx = this.regX,
                 ry = this.regY;
-
-            if (!img) {
-                return;
-            }
-
-            //console.log(
-            //    "update()",
-            //    "rotation", this.r,
-            //    "x", this.x,
-            //    "y", this.y
-            //);
 
             // Clearing operations assume assume regX, regY, and img are static
 
@@ -171,7 +168,9 @@
             /* debug */
             if (_debug.show.visible) {
             /* /debug */
-            ctx.drawImage(img, -rx, -ry);
+            if (img) {
+                ctx.drawImage(img, -rx, -ry);
+            }
             /* debug */
             }
             /* /debug */

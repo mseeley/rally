@@ -6,9 +6,24 @@
         _cos = _math.cos,
         _sqrt = _math.sqrt,
         _round = rally.math.round,
-        _canvas = document.createElement("canvas");
+        _canvas;
 
     const PI_RADIANS = _math.PI / 180;
+
+    function getImageData (img) {
+        if (!_canvas) {
+            _canvas = document.createElement("canvas");
+        }
+        
+        var w = img.width,
+            h = img.height,
+            ctx = _canvas.getContext("2d");
+
+        _canvas.width = w;
+        _canvas.height = h;
+        ctx.drawImage(img, 0, 0);
+        return ctx.getImageData(0, 0, w, h);
+    }
 
     var point = {
 
@@ -52,14 +67,21 @@
             ];
         },
 
-        transformAll: function (pts, angle, translate, origin) {
-            //console.log(
-            //    "transformAll()",
-            //    "angle", angle,
-            //    "translate", translate,
-            //    "origin", origin
-            //);
+        velocity: function (angle, speed) {
+            angle *= PI_RADIANS;
 
+            var vx = _sin(angle) * speed,
+                vy = -(_cos(angle) * speed);
+
+            return [
+                _round(vx), _round(vy)
+            ];
+        },
+
+        /**
+         * @param angle Number in degrees
+         */
+        transformAll: function (pts, angle, translate, origin) {
             var points = [],
                 hash = {},
                 i = 0,
@@ -72,17 +94,16 @@
                 y1,
                 pt;
 
+            // NOTE: This builds a bounds object just like opaque()
+
             for (i; i < len; i++) {
                 x1 = pts[i][0] + tx;
                 y1 = pts[i][1] + ty;
                 pt = point.rotate([x1, y1], angle, [x, y]);
+
                 points[i] = pt;
-
-// FIXME: Similar code to opaque() although opaque() traverses imageData
-// FIXME: Hash keys must always be real numbers
-
-                x1 = Math.round(x1);
-                y1 = Math.round(y1);
+                x1 = Math.round(pt[0]);
+                y1 = Math.round(pt[1]);
 
                 if (hash[x1] == null) {
                     hash[x1] = {};
@@ -91,43 +112,19 @@
                 hash[x1][y1] = 1;
             }
 
-//FIXME: tranformToHash, transformToPoints
-//FIXME: Make opaqueAsHash, opaqueAsPoints
-//FIXME: points is used for collision
-//FIXME: hash is used for bounds values
-
             return {
                 points: points,
                 hash: hash
             };
         },
 
-        velocity: function (angle, speed) {
-            angle *= PI_RADIANS;
-
-            var vx = _sin(angle) * speed,
-                vy = -(_cos(angle) * speed);
-
-            return [
-                _round(vx), _round(vy)
-            ];
-        },
-
         // Returns an object of pixel information
 
         opaque: function (img) {
-
-            var w = img.width,
-                h = img.height,
-                ctx = _canvas.getContext("2d");
-
-            _canvas.width = w;
-            _canvas.height = h;
-            ctx.drawImage(img, 0, 0);
-
             var fromIndex = point.fromIndex,
-                pixels = ctx.getImageData(0, 0, w, h).data,
+                pixels = getImageData(img).data,
                 len = pixels.length,
+                w = img.width,
                 points = [],
                 hash = {},
                 i = 3,
@@ -135,13 +132,15 @@
                 x,
                 y;
 
+            // NOTE This builds a bounds object just like transformAll()
+
             for (i; i <= len; i+=4) {
                 if (pixels[i] > 0) {
                     pt = fromIndex(i, w);
 
                     points[points.length] = pt;
-                    x = pt[0];
-                    y = pt[1];
+                    x = Math.round(pt[0]);
+                    y = Math.round(pt[1]);
 
                     if (hash[x] == null) {
                         hash[x] = {};

@@ -59,13 +59,31 @@
         }
     };
 
+    function _points (ctx, pts, fillStyle) {
+        ctx.save();
+        ctx.fillStyle = fillStyle || FILL_STYLE;
+
+        var i = 0,
+            len = pts.length,
+            pt,
+            x = 0,
+            y = 1;
+
+        for (i; i < len; i++) {
+            pt = pts[i];
+            ctx.fillRect(pt[x], pt[y], 1, 1);
+        }
+
+        ctx.restore();
+    }
+
     rally.debug = {
         show: {
             axes: 0,
-            bounds: 1,
-            hitpoints: 1,
+            bounds: 0,
+            hitpoints: 0,
             origin: 0,
-            visible: 0
+            visible: 1
         },
         axes: function (ctx, fillStyle) {
             var c = ctx.canvas,
@@ -110,22 +128,19 @@
 
             ctx.restore();
         },
-        points: function (ctx, pts, fillStyle) {
-            ctx.save();
-            ctx.fillStyle = fillStyle || FILL_STYLE;
+        points: _points,
+        hash: function (ctx, hash, fillStyle) {
+            var pts = [],
+                x,
+                y;
 
-            var i = 0,
-                len = pts.length,
-                pt,
-                x = 0,
-                y = 1;
-
-            for (i; i < len; i++) {
-                pt = pts[i];
-                ctx.fillRect(pt[x], pt[y], 1, 1);
+            for (x in hash) {
+                for (y in hash[x]) {
+                    pts.push([x, y]);
+                }
             }
 
-            ctx.restore();
+            _points(ctx, pts, fillStyle);
         },
         indices: function (ctx, idxs, fillStyle) {
             ctx.save();
@@ -147,5 +162,6 @@
             var fps = new Fps(stage);
             fps.enable();
         }
-    }
+    };
+
 })();

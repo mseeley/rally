@@ -12,37 +12,26 @@
 
     Car.prototype = lang.merge(rally.Vehicle.prototype, {
         init: function () {
-//FIXME: This loading procession will be duplicated in all subclasses; move?
-//FIXME: Same code as Base.init
-//FIXME: Refactor. Too much .call, too much code
-            var ready = 0,
-                assets = [
+            var assets = [
                     {
                         src: VISIBLE_SRC,
-                        fn: function (img) {
+                        success: function (img) {
                             this.setImage(img);
                             this.regX = _round(img.width / 2);
-                            this.regY = _round(img.height * 0.35);
+                            this.regY = _round(img.height * 0.45);
                         }
                     }, {
                         src: BOUNDS_SRC,
-                        fn: this.setBounds
+                        success: this.setBounds
                     }, {
                         src: HIT_POINTS_SRC,
-                        fn: this.setHitPoints
+                        success: this.setHitPoints
                     }
                 ];
 
-            assets.forEach(function (asset) {
-                var self = this;
-                this.load(asset.src, function (img) {
-                    asset.fn.call(this, img);
-                    if (++ready == assets.length) {
-                        this.fire("init");
-                    }
-                }, this);
-            }, this);
-
+            this.load(assets, function () {
+                this.fire("init");
+            });
         }
     });
 
