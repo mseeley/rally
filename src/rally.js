@@ -1,6 +1,12 @@
+// All requires statements to external resources go here.
+
+/*requires res/lang.js*/
+/*requires res/publisher.js*/
+/*requires res/timer.js*/
+
 (function (global) {
 
-    const VERSION = "0.1b";
+    const VERSION = "{$version}";
 
     var isSupported = null;
 

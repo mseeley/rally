@@ -1,3 +1,6 @@
+/*requires rally.js*/
+
+/* debug */
 (function () {
 
     const FILL_STYLE = "red",
@@ -165,3 +168,4 @@
     };
 
 })();
+/* /debug */

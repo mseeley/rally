@@ -1,3 +1,11 @@
+/*global rally*/
+
+/*requires rally.js*/
+/*requires actor.js*/
+/*requires point.js*/
+/*requires math.js*/
+/*requires debug.js*/
+
 (function () {
 
     var _transformAll = rally.point.transformAll,

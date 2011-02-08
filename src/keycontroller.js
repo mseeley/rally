@@ -1,4 +1,8 @@
-// arrow + meta - arrow - meta = arrow...
+/*global rally*/
+
+/*requires rally.js*/
+
+//TEST: arrow + meta - arrow - meta = arrow...
 
 (function () {
 
@@ -56,7 +60,7 @@
                 keyend = evt.listeners(KEYEND);
 
             if (keys & !keystart.length && !keyend.length) {
-                
+
                 keys = null;
                 document.removeEventListener(KEYDOWN, keydown, false);
                 document.removeEventListener(KEYUP, keyup, false);

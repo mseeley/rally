@@ -1,3 +1,7 @@
+/*global rally*/
+
+/*requires rally.js*/
+
 (function () {
 
     var _math = Math,

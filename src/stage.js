@@ -1,3 +1,8 @@
+/*global rally*/
+
+/*requires rally.js*/
+/*requires keycontroller.js*/
+
 (function () {
 
     const FPS = 55;

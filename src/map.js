@@ -1,3 +1,8 @@
+/*global rally*/
+
+/*requires rally.js*/
+/*requires actor.js*/
+
 (function () {
 
     function Map (w, h) {

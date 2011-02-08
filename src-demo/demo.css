@@ -10,27 +10,11 @@ body {
     width: 800px;
     height: 600px;
     background-color:#fff;
+    position:relative;
 }
 
-/*
----------------
-*/
-
-div.log {
-    position:fixed;
-    right:0;
+#stage canvas {
+    position:absolute;
     top:0;
-    width: 300px;
-    height: 100%;
-    overflow: auto;
-    background: rgba(255,255,255,.93);
-    z-index:10;
-
-    -moz-box-shadow: 0px 5px 5px #ccc;
-    -webkit-box-shadow: 0px 5px 5px #ccc;
-    box-shadow: 0px 5px 5px #ccc;
-}
-
-p.log {
-    font: 14px/18px Helvetica, sans-serif;
+    left:0;
 }

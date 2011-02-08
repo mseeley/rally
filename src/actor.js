@@ -1,3 +1,10 @@
+/*global rally*/
+
+/*requires rally.js*/
+/*requires debug.js*/
+/*requires math.js*/
+/*requires point.js*/
+
 (function () {
 
     var _canvas = document.createElement("canvas"),
