@@ -29,7 +29,7 @@
 
         accel: 1,
         decel: 0.975,
-        handling: 10,
+        handling: 9,
         bounce: .6,
 
         mfs: 10,
@@ -103,22 +103,8 @@
                 x = _round(this.x - v[0]),
                 y = _round(this.y - v[1]);
 
-// FIXME: A car should be able to rotate freely when 'parallel parked' against bounds
-
-// FIXME: If hitpoints of two actors overlap this can get stuck in a recursive loop
-//        Actors need to repel each other intelligently; inverting speed is only good
-//        for single Vehicle demos.  Easy to confirm by parking next to a wall then
-//        rotating. Speed is zero so there is no bounce.  Preventing rotation when
-//        there is no speed or translating the car is necessary.  Translating
-//        the car has issues when in tight quarters, perhaps stopping rotation
-//        is the best approach.  Or, hit test rotation separately of velocity (bound
-///       on both direction and speed)
-
-// FIXME: Of course, if Vehicles responded to being hit by moving his problem
-//        would be lessened.  Although imagine being plowed into a wall, nowhere to go
-
             if (this.hitTest([x, y], r)) {
-                this.transform(direction, -speed * this.bounce);
+                this.transform(direction /= 2, _equal(speed, 0) ? 0 : -speed * this.bounce);
             } else {
                 this.speed = _round(speed);
                 this.x = x;
