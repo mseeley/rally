@@ -2,12 +2,28 @@
 <html>
 <head>
     <title>rally</title>
-    <link rel="stylesheet" type="text/css" href="demo.css"></link>
+    <link rel="stylesheet" type="text/css" href="demo.css" />
 </head>
 <body>
-    <button id="on">ON</button>
-    <button id="off">OFF</button>
     <div id="stage" class="rally-stage"></div>
+    <form id="debug" name="debug">
+        <fieldset id="stage-ctrl">
+            <legend>Stage</legend>
+            <button type="button" name="on" id="btn-on">On</button>
+            <button type="button" name="off" id="btn-off">Off</button>
+        </fieldset>
+        <fieldset id="show-ctrl">
+            <legend>Show</legend>
+            <ul>
+                <li><label><input type="checkbox" name="axes" value="1">axes</label></li>
+                <li><label><input type="checkbox" name="bounds" value="1">bounds</label></li>
+                <li><label><input type="checkbox" name="hitpoints" value="1">hitpoints</label></li>
+                <li><label><input type="checkbox" name="origin" value="1">origin</label></li>
+                <li><label><input type="checkbox" name="visible" value="1" checked>visible</label></li>
+            </ul>
+        </fieldset>
+        <label id="fps">FPS: </label>
+    </form>
 </body>
 <!-- rally dependencies -->
 <script src="../src/res/lang.js"></script>

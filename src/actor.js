@@ -136,7 +136,7 @@
 
             if (this._x !== null) {
                 /* debug */
-                if (_debug.show.axes) {
+                if (_debug) {
                     // Clearing entire canvas; easier when debugging
                     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 } else {

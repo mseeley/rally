@@ -14,7 +14,7 @@
 
         this.keys = [];
         this.children = [];
-   }
+    }
 
     Stage.prototype = publisher.extend({
         children: null,

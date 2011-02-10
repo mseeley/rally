@@ -1,9 +1,6 @@
 body {
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    position:relative;
     background-color:#ccc;
+    margin:0;
 }
 
 #stage {
@@ -17,4 +14,44 @@ body {
     position:absolute;
     top:0;
     left:0;
+}
+
+#debug {
+    right:0;
+    top:0;
+    position:absolute;
+    background-color:rgba(255,255,255,.5);
+    padding:5px;
+}
+
+#debug ul {
+    list-style:none;
+    margin:0;
+    padding:0;
+}
+#debug label,
+#debug legend {
+    font-size:0.687em;
+    font-family:Helvetica,Arial,sans-serif;
+    color:#000;
+}
+#debug fieldset {
+    padding:0 5px 5px;
+    margin:0 0 5px 0;;
+    border-width:1px;
+    border-color:#aaa;
+}
+#debug input[type=checkbox] {
+    margin:0;
+    margin-right:5px;
+}
+
+#fps {
+    padding:2px;
+}
+
+#fps input {
+    width: 2em;
+    text-align:center;
+    padding:0;
 }

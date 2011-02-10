@@ -6,12 +6,11 @@
     const FILL_STYLE = "red",
           STROKE_STYLE = "skyblue";
 
-    function Fps (stage) {
+    function Fps (stage, node) {
         var input = document.createElement("input");
         input.readOnly = true;
-        input.style.width = "50px";
 
-        stage.element.parentNode.appendChild(input);
+        node.appendChild(input);
         stage.on("active", this.onactive, this);
 
         this.input = input;
@@ -161,8 +160,19 @@
 
             ctx.restore();
         },
-        displayFps: function (stage) {
-            var fps = new Fps(stage);
+
+        update: function (stage) {
+            // Force an update on all children
+            var children = stage.children,
+                count = children.length;
+
+            while (count--) {
+                children[count].update();
+            }
+        },
+
+        displayFps: function (stage, node) {
+            var fps = new Fps(stage, node);
             fps.enable();
         }
     };
