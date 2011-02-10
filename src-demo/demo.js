@@ -128,69 +128,107 @@
 
         (function () {
 
-            // Binds location's hash parameter value to the #show-ctrl
-            // checkbox input elements.
+            var form = $("debug"),
+                elements = form.elements,
+                checkboxes = form.querySelectorAll("[type=checkbox]");
 
-            function updateStage (h) {
-                var d = rally.debug,
-                    k;
+            function showHide (name, isShown) {
+                var checked = !!isShown,
+                    d = rally.debug;
 
-                for (k in d.show) {
-                    d.show[k] = +(h.indexOf(k) > -1);
+                elements[name].checked = checked;
+
+                if (isShown) {
+                    hash.set(name);
+                } else {
+                    hash.unset(name);
                 }
 
+                d.show[name] = checked;
                 d.update(stage);
             }
 
-            function updateCtrls (h) {
-                var checkboxes = $("debug").querySelectorAll("input[type=checkbox]"),
-                    len = checkboxes.length,
+            function display (h) {
+                var len = checkboxes.length,
                     i = 0,
+                    name,
                     cb;
 
                 for (i; i < len; i++) {
                     cb = checkboxes[i];
-                    cb.checked = (h.indexOf(cb.name) > -1);
+                    name = cb.name;
+
+                    // If an empty hash was passed, then pull default values
+                    // from DOM.
+
+                    if (!h.length) {
+                        if (cb.hasAttribute("checked")) {
+                            showHide(name, true);
+                        } else {
+                            showHide(name, false);
+                        }
+                    } else if (h.indexOf(cb.name) > -1) {
+                        showHide(name, true);
+                    } else {
+                        showHide(name, false);
+                    }
+
                 }
             }
 
+            // Location hash utility object
+
             var hash = {
                 glue: "-",
-                update: function (k, v) {
-                    var h = hash.get(),
-                        keyIdx = h.indexOf(k),
-                        hasKey = keyIdx > -1;
 
-                    if (hasKey && !v) {
-                        h.splice(keyIdx, 1);
-                    } else if (!hasKey && v) {
+                get: function () {
+                    var h = location.hash.substring(1);
+                    return h ? h.split(hash.glue) : [];
+                },
+
+                set: function (k) {
+                    var h = hash.get(),
+                        keyIdx = h.indexOf(k);
+
+                    if (keyIdx < 0) {
                         h.push(k);
                     }
 
-                    return h;
-                },
-                get: function (h) {
-                    return location.hash.substring(1).split(hash.glue);
-
-                },
-                set: function (h) {
                     location.href = location.origin +
                                     location.pathname +
-                                    "#" + h.join(hash.glue);
+                                    (h.length) ? "#" + h.join(hash.glue) : '';
+
+                    return h;
+                },
+
+                unset: function (k) {
+                    var h = hash.get(),
+                        keyIdx = h.indexOf(k);
+
+                    if (keyIdx > -1) {
+                        h.splice(keyIdx, 1);
+                    }
+
+                    location.href = location.origin +
+                                    location.pathname +
+                                    (h.length) ? "#" + h.join(hash.glue) : '';
+
                     return h;
                 }
             };
 
-            var h = hash.get();
-            updateStage(h);
-            updateCtrls(h);
+            display(hash.get());
 
             on("click", $("show-ctrl"), function (e) {
                 var t = e.target,
                     s = t.name;
 
                 if (t.nodeName == "INPUT") {
-                    updateStage(hash.set(hash.update(s, +t.checked))); // whoa...
+                    if (t.checked) {
+                        showHide(t.name, true);
+                    } else {
+                        showHide(t.name, false);
+                    }
                 }
             });
 
