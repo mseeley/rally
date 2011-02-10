@@ -57,6 +57,7 @@
                 clearInterval(this.interval);
                 stage.off("frame", this.onframe, this);
                 this.input.value = '';
+                this.interval = null;
             }
         }
     };

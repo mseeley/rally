@@ -194,9 +194,7 @@
                         h.push(k);
                     }
 
-                    location.href = location.origin +
-                                    location.pathname +
-                                    (h.length) ? "#" + h.join(hash.glue) : '';
+                    location.hash = h.join(hash.glue);
 
                     return h;
                 },
@@ -209,9 +207,7 @@
                         h.splice(keyIdx, 1);
                     }
 
-                    location.href = location.origin +
-                                    location.pathname +
-                                    (h.length) ? "#" + h.join(hash.glue) : '';
+                    location.hash = h.join(hash.glue);
 
                     return h;
                 }
